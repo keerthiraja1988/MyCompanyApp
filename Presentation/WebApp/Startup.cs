@@ -81,6 +81,7 @@ namespace WebApp
             });
             services.AddElmah<SqlErrorLog>(options =>
             {
+               
                 options.ConnectionString = "Data Source=.;Initial Catalog=MyCompanyAppDB;Integrated Security=True"; // DB structure see here: https://bitbucket.org/project-elmah/main/downloads/ELMAH-1.2-db-SQLServer.sql
             });
 

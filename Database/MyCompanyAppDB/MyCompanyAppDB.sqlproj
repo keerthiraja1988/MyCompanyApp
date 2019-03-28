@@ -131,4 +131,7 @@
     <Build Include="Security\Permissions.sql" />
     <Build Include="CustomScripts\ELMAH-1.2-db-SQLServer.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="CustomScripts\ElmahCustom2.sql" />
+  </ItemGroup>
 </Project>
