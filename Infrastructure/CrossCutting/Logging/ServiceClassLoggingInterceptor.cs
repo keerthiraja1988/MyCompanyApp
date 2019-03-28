@@ -1,5 +1,7 @@
 ﻿using Castle.DynamicProxy;
 using NLog;
+using NLog.Config;
+using NLog.Targets;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -26,8 +28,10 @@ namespace CrossCutting.Logging
 
             try
             {
+
                 var logMethodStartEvent = LogEventInfo.Create(LogLevel.Info, invocationTarget,
                                             "Executing method " + methodName);
+
                 logMethodStartEvent.SetCallerInfo(invocationTarget, methodName + " - "
                                                                         , codeBase, 0);
                 _logger.Log(logMethodStartEvent);
@@ -69,7 +73,7 @@ namespace CrossCutting.Logging
                                                                         , codeBase, 0);
 
                 _logger.Log(logMethodEndEvent);
-                throw ex;
+                throw ;
             }
         }
 
@@ -99,7 +103,7 @@ namespace CrossCutting.Logging
                 logMethodEndEvent.SetCallerInfo(invocationTarget, methodName + " - "
                                                                         , codeBase, 0);
                 _logger.Log(logMethodEndEvent);
-                throw ex;
+                throw ;
             }
         }
 
@@ -138,7 +142,7 @@ namespace CrossCutting.Logging
 
                 _logger.Log(logMethodEndEvent);
 
-                throw ex;
+                throw ;
             }
 
         }

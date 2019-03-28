@@ -6,6 +6,8 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using CrossCutting.Logging;
+using ElmahCore.Mvc;
+using ElmahCore.Sql;
 using IOC;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -72,6 +74,16 @@ namespace WebApp
             //      options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
             //  });
 
+            services.AddElmah(options =>
+            {
+                //options.CheckPermissionAction = context => context.User.Identity.IsAuthenticated;
+                options.Path = @"elmah";
+            });
+            services.AddElmah<SqlErrorLog>(options =>
+            {
+                options.ConnectionString = "Data Source=.;Initial Catalog=MyCompanyAppDB;Integrated Security=True"; // DB structure see here: https://bitbucket.org/project-elmah/main/downloads/ELMAH-1.2-db-SQLServer.sql
+            });
+
             services.AddMvc(options => options.Filters.Add(new AuthorizeFilter()))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSignalR();
@@ -102,7 +114,7 @@ namespace WebApp
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            app.UseElmah();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();

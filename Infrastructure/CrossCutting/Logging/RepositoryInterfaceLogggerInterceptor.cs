@@ -129,7 +129,7 @@ namespace CrossCutting.Logging
 
 
 
-                throw ex;
+                throw ;
 
             }
 
@@ -197,7 +197,7 @@ namespace CrossCutting.Logging
 
 
 
-                throw ex;
+                throw;
 
             }
 
@@ -267,7 +267,7 @@ namespace CrossCutting.Logging
 
 
 
-                throw ex;
+                throw;
 
             }
 
