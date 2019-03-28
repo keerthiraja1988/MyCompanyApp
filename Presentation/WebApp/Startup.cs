@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
+using CrossCutting.Logging;
 using IOC;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NLog;
 using WebApp.Hubs;
 using WebApp.Infrastructure;
 
@@ -32,6 +34,8 @@ namespace WebApp
         public IConfiguration Configuration { get; }
 
         public IContainer ApplicationContainer { get; private set; }
+
+        Logger logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -76,6 +80,8 @@ namespace WebApp
             builder.Populate(services);
             builder.RegisterModule(new ServiceIOC("InstancePerLifetimeScope"));
             builder.RegisterModule(new DatabaseIOC("Data Source=.;Initial Catalog=MyCompanyAppDB;Integrated Security=True", "InstancePerLifetimeScope"));
+            builder.Register(c => new ServiceClassLoggingInterceptor(logger)).InstancePerLifetimeScope();
+            builder.Register(c => new RepositoryInterfaceLogggerInterceptor(logger)).InstancePerLifetimeScope();
 
             this.ApplicationContainer = builder.Build();
 

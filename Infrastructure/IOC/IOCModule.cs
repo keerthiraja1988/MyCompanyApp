@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Autofac.Extras.DynamicProxy;
 using Insight.Database;
 using RepositoryInterface;
 using ServiceConcrete;
@@ -21,11 +22,13 @@ namespace IOC
         {
             if (this._lifeTime == "InstancePerLifetimeScope")
             {
-                builder.RegisterType<AdminService>().As<IAdminService>().InstancePerLifetimeScope();
+                builder.RegisterType<AdminService>().As<IAdminService>()
+                    .InstancePerLifetimeScope().EnableInterfaceInterceptors();
             }
             else
             {
-                builder.RegisterType<AdminService>().As<IAdminService>();
+                builder.RegisterType<AdminService>().As<IAdminService>()
+                    .EnableInterfaceInterceptors();
             }
 
             base.Load(builder);
@@ -51,11 +54,12 @@ namespace IOC
             {
                 builder
                     .Register(b => this._sqlConnection.AsParallel<IAdminRepository>())
-                    .InstancePerLifetimeScope();
+                    .InstancePerLifetimeScope().EnableInterfaceInterceptors();
             }
             else
             {
-                builder.Register(b => this._sqlConnection.AsParallel<IAdminRepository>());
+                builder.Register(b => this._sqlConnection.AsParallel<IAdminRepository>())
+                            .EnableInterfaceInterceptors();
             }
 
             base.Load(builder);

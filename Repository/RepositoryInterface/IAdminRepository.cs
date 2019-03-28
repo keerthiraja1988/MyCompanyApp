@@ -1,4 +1,6 @@
-﻿using Domain;
+﻿using Autofac.Extras.DynamicProxy;
+using CrossCutting.Logging;
+using Domain;
 using Insight.Database;
 using System;
 using System.Collections.Generic;
@@ -6,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace RepositoryInterface
 {
+    [Intercept(typeof(RepositoryInterfaceLogggerInterceptor))]
     public interface IAdminRepository
     {
         [Sql("SELECT *  FROM [dbo].[User]")]

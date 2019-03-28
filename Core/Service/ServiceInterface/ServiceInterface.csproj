@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac.Extras.DynamicProxy" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Infrastructure\CrossCutting\CrossCutting.csproj" />
     <ProjectReference Include="..\..\Domain\Domain.csproj" />
   </ItemGroup>
 
