@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - WebApp</title>
+
+
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" />
+
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery-ajax-unobtrusive/src/jquery.unobtrusive-ajax.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+    <script src="~/lib/aspnet/signalr/dist/browser/signalr.js"></script>
+    @RenderSection("Scripts", required: false)
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebApp</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="Index">Privacy</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <partial name="_CookieConsentPartial" />
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2019 - WebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+
+        <div  id="modalProgressBar" class="modal fade" data-backdrop="static"  style="z-index: 1600;"
+             data-keyboard="false" tabindex="-1" data-backdrop-limit="1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-m modal-dialog-centered" style=" max-width: 50% !important;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 style="margin:0;">
+                            <small class="text-muted">Processing. Please wait..</small>
+                        </h3>
+                    </div>
+                    <div class="modal-body">
+                        <div class="progress">
+                            <input type="hidden" id="progrsStartValue" name="progrsStartValue" value="" />
+                            <input type="hidden" id="progrsEndValue" name="progrsEndValue" value="0" />
+                            <input type="hidden" id="signalRconnectionId" name="signalRconnectionId" value="" />
+                            <div id="dynamic" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+
+                //parsing the unobtrusive attributes when we get content via ajax
+                $(document).ajaxComplete(function () {
+                    $.validator.unobtrusive.parse(document);
+                });
+
+                $(document).ready(function () {
+
+
+                    $(document).on('show.bs.modal', '.modal', function (event) {
+                        var zIndex = 1040 + (10 * $('.modal:visible').length);
+                        $(this).css('z-index', zIndex);
+                        setTimeout(function () {
+                            $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+                        }, 0);
+                    });
+
+
+                });
+
+                "use strict";
+
+                var connection = new signalR.HubConnectionBuilder().withUrl("/anonymousClientHub").build();
+                connection.start().then(function () {
+
+                    connection.invoke('getConnectionId')
+                        .then(function (connectionId) {
+                            // Send the connectionId to controller
+                            console.log("connectionID: " + connectionId);
+                            $("#signalRconnectionId").attr("value", connectionId);
+                        });
+                }).catch(function (err) {
+                    return console.error(err.toString());
+                });
+
+                //Signal method invoked from server
+                connection.on("progressBarUpdate", (percentage) => {
+                  
+
+                    var progrsEndValue = $('#progrsEndValue').val();
+
+                    $("#progrsStartValue").attr("value", progrsEndValue);
+
+                    $("#progrsEndValue").attr("value", percentage);
+
+                    $("#dynamic")
+                        .attr("aria-valuenow", percentage);
+
+                  
+                    var delay = 200;
+
+                    $("#dynamic")
+                        .css("width", percentage + "%")
+
+                    $("#dynamic").prop('Counter', progrsEndValue).animate({
+                        Counter: percentage
+                    }, {
+                            duration: delay,                          
+                            step: function (now) {
+                                $(this).text(Math.ceil(now) + '%');
+                            }
+                        });
+
+                    if (percentage == '100') {
+                        setTimeout(
+                            function () {
+
+                                $('#modalProgressBar').modal('hide');
+                              
+                            }, delay);
+                    }
+                });
+            </script>
+        </div>
+    </footer>
+
+
+</body>
+</html>

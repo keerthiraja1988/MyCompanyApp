@@ -1,0 +1,8 @@
+{
+  "name": "myproject",
+  "dependencies": {
+    "jquery-ajax-unobtrusive": "3.2.6",
+    "sweetalert2": "^8.7.0",
+    "font-awesome-5": "^5.8.1"
+  }
+}

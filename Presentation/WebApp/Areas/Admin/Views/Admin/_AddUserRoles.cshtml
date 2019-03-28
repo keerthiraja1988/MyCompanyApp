@@ -1,0 +1,45 @@
+﻿<!-- Modal -->
+<div class="modal fade" id="modalAddUserRoles" tabindex="-1" role="dialog" aria-labelledby="modalAddUserRoles" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add User Roles</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formAddUser" asp-area="Admin" asp-controller="Admin" asp-action="AddUser"
+                  method="post" data-ajax="true"
+                  data-ajax-begin="addUserOnBegin" data-ajax-complete="addUserOnComplete"
+                  data-ajax-success="addUserOnSuccess" data-ajax-failure="addUserOnFailure">
+                <div class="modal-body">
+
+                  
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-primary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#modalAddUserRoles').modal('show');
+
+    function addUserOnBegin() {
+
+
+    };
+
+    function addUserOnComplete() {
+
+
+    };
+    
+    function addUserOnFailure() {
+
+
+    };
+</script>

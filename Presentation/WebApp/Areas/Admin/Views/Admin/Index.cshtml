@@ -1,0 +1,64 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>User Management</h1>
+
+<button type="button" id="btnGetAddUserPartialView" class="btn btn-primary btn-lg"
+        onclick="GetAddUserPartialView('@Url.Action("GetAddUserPartialView", "Admin", new { Area = "Admin" })')">
+    <i class="fas fa-user-plus"></i> Add User
+</button>
+
+<div class="modal" id="modalAddUser" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formAddUser" asp-area="Admin" asp-controller="Admin" asp-action="AddUser"
+                  method="post" data-ajax="true"
+                  data-ajax-begin="addUserOnBegin" data-ajax-complete="addUserOnComplete"
+                  data-ajax-success="addUserOnSuccess" data-ajax-failure="addUserOnFailure"
+                data-ajax-mode="replace"
+                  data-ajax-update="#ajaxresult" >
+                <div class="modal-body" id="ajaxresult">
+                    @*@await Html.PartialAsync("_AddUser1")*@
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i>Create</button>
+                    <button type="button" id="btnAddUserCancel" onclick="AddUserCancelOnClick()"
+                            class="btn btn-secondary">
+                        <i class="fas fa-times"></i>Cancel</button>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="loadAddUserPartialView">
+
+</div>
+
+<div id="loadAddUserRolePartialView">
+
+</div>
+
+<script>
+
+    function GetAddUserPartialView(acionUrl) {
+        $('#modalAddUser').modal('show');
+        $('#ajaxresult').load(acionUrl);
+    };
+
+    function AddUserCancelOnClick() {
+        $('#modalAddUser').modal('hide');
+    };
+</script>
