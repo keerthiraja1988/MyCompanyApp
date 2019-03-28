@@ -11,6 +11,7 @@ using ElmahCore.Sql;
 using IOC;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -60,19 +61,35 @@ namespace WebApp
             });
 
             services.AddSingleton<AnonymousClientHub>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            //  .AddCookie(options =>
-            //  {
+            services.AddAuthentication(options =>
+            {
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+                  .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+                  {
+                      
+                      options.AccessDeniedPath = new PathString("/Home/AccessDenied");
+                      //options.LoginPath = new PathString("/UserAccount");
+                      options.ExpireTimeSpan = TimeSpan.FromSeconds(600);
+                      options.SlidingExpiration = true;
 
-            //      options.Cookie.Name = "TEst";
-            //      options.Cookie.HttpOnly = true;
-            //      options.Cookie.SecurePolicy =  CookieSecurePolicy.Always;
-            //      options.Cookie.SameSite = SameSiteMode.Lax;
-            //      options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-            //      options.SlidingExpiration = true;
-            //      options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-            //  });
+                      options.Events = new CookieAuthenticationEvents()
+                      {
+                          OnRedirectToAccessDenied = (ctx) =>
+                          {
+                              var request = ctx.HttpContext.Request.Path;
+                              logger.Fatal("Access Denied to Path" +
+                                               request.Value);
+                              ctx.Response.Redirect(ctx.RedirectUri);
+                              return Task.CompletedTask;
+                          }
+                      };
+                  });
+
 
             services.AddElmah(options =>
             {
@@ -118,7 +135,16 @@ namespace WebApp
             app.UseElmah();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
+
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                HttpOnly = HttpOnlyPolicy.Always,
+                
+                Secure = CookieSecurePolicy.Always,
+                MinimumSameSitePolicy = SameSiteMode.None
+            });
+
+            app.UseAuthentication();
 
             app.UseSignalR(routes =>
             {
