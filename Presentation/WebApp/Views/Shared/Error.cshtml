@@ -10,7 +10,8 @@
     <div class="col-md-12">
         <div class="text-center">
             <h1 class="display-1" style=" color: #e21212; font-size:larger;font-size: 165px;">
-                <i class="fas fa-grimace"></i>
+                @*<i class="fas fa-grimace"></i>*@
+                <i class="fas fa-frown"></i>
             </h1>
 
             <h1 class="display-3">
@@ -20,15 +21,16 @@
                 An error occurred while processing your request.
             </div>
 
-            <div class="pt-2" style="font-size: 12px !important; font-weight:bold ">
-                <p style="font-weight:normal"> Occured At </p>  @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")
+            <div class="pt-3" style="font-size: 12px !important;">
+
+                Occured At : <strong>  @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") </strong>
             </div>
 
             @if (Model.ShowRequestId)
             {
-                <div class="pt-4" style="font-size: 12px !important; font-weight:bold ">
-                    <p style="font-weight:normal"> Request ID </p>  @Model.RequestId
-                </div>
+                <div class="pt-3" style="font-size: 12px !important;">
+                    Request ID : <strong>   @Model.RequestId </strong>
+            </div>
             }
 
             <div class="error-actions pt-4">

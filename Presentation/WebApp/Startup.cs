@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
@@ -23,6 +24,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using WebApp.Hubs;
 using WebApp.Infrastructure;
+using WebApp.Infrastructure.Security;
 
 namespace WebApp
 {
@@ -50,6 +52,53 @@ namespace WebApp
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddAuthentication(options =>
+            {
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+                 {
+                     options.AccessDeniedPath = new PathString("/Home/AccessDenied");
+                     options.LoginPath = new PathString("/Home/Login");
+                     options.ExpireTimeSpan = TimeSpan.FromSeconds(600);
+                     options.SlidingExpiration = true;
+
+                     options.Events = new CookieAuthenticationEvents()
+                     {
+                         OnRedirectToAccessDenied = (ctx) =>
+                         {
+                             var request = ctx.HttpContext.Request.Path;
+                           
+                             ctx.Response.Redirect(ctx.RedirectUri);
+                             return Task.CompletedTask;
+                         }
+                     };
+                 });
+
+            services.AddAuthorization();
+
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            //  .AddCookie(options =>
+            //  {
+            //      options.LoginPath = "/Home/Login";
+            //      options.AccessDeniedPath = "/Home/AccessDenied";
+            //  });
+
+            //services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy("Authenticated",
+            //        policy => policy.RequireClaim("Authenticated"));
+
+            //    options.AddPolicy("Admin",
+            //        policy => policy.RequireClaim("Admin"));
+
+            //    options.AddPolicy("Test",
+            //       policy => policy.RequireClaim("Test"));
+            //});
+
+
             services.AddAutoMapper();
 
             services.Configure<RazorViewEngineOptions>(options =>
@@ -63,32 +112,22 @@ namespace WebApp
             services.AddSingleton<AnonymousClientHub>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            })
-                  .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-                  {
-                      
-                      options.AccessDeniedPath = new PathString("/Home/AccessDenied");
-                      //options.LoginPath = new PathString("/UserAccount");
-                      options.ExpireTimeSpan = TimeSpan.FromSeconds(600);
-                      options.SlidingExpiration = true;
+            //services.AddAntiforgery(options =>
+            //{
+            //    // new API
+            //    // ReSharper disable once StringLiteralTypo
+            //    options.Cookie.Name = "AntiforgeryCookie";
 
-                      options.Events = new CookieAuthenticationEvents()
-                      {
-                          OnRedirectToAccessDenied = (ctx) =>
-                          {
-                              var request = ctx.HttpContext.Request.Path;
-                              logger.Fatal("Access Denied to Path" +
-                                               request.Value);
-                              ctx.Response.Redirect(ctx.RedirectUri);
-                              return Task.CompletedTask;
-                          }
-                      };
-                  });
+            //    options.Cookie.Path = "/";
+            //    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            //});
+
+            services.AddHttpsRedirection(options =>
+            {
+                options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+                options.HttpsPort = 443;
+            });
+
 
 
             services.AddElmah(options =>

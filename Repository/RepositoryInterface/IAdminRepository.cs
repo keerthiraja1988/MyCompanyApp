@@ -11,7 +11,7 @@ namespace RepositoryInterface
     [Intercept(typeof(RepositoryInterfaceLogggerInterceptor))]
     public interface IAdminRepository
     {
-        [Sql("SELECT *  FROM [dbo].[User]")]
+        [Sql("SELECT * 1 FROM [dbo].[User]")]
         Task<List<User>> GetUsers();
 
         [Sql("P_AddUser")]
