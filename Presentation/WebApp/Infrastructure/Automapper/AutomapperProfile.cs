@@ -13,7 +13,7 @@
         public AutomapperProfile()
         {
             CreateMap<UserViewModel, User>()
-                    .ReverseMap().ForAllMembers(opt => opt.Ignore()); 
+                    .ReverseMap(); 
         }
     }
 }

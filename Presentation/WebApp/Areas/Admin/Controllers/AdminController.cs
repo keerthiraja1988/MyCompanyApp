@@ -18,6 +18,7 @@
     using WebApp.Models;
 
     [AppAuthorization]
+    [AutoValidateAntiforgeryToken]
     [Area("Admin")]
     public class AdminController : Controller
     {
@@ -47,7 +48,7 @@
 
             usersViewModel = this._mapper.Map<List<UserViewModel>>(users);
 
-            return await Task.Run(() => this.View());
+            return await Task.Run(() => this.View(usersViewModel));
         }
 
         [HttpGet]
@@ -106,6 +107,90 @@
             UserViewModel userViewModel = new UserViewModel();
 
             return this.PartialView("_AddUserRoles", userViewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetEditUserPartialView(long userId)
+        {
+            List<User> users = await this._adminService.GetUsers();
+
+            List<UserViewModel> usersViewModel = new List<UserViewModel>();
+
+            usersViewModel = this._mapper.Map<List<UserViewModel>>(users);
+
+            var userViewModel = usersViewModel.Where(x => x.UserId == userId).FirstOrDefault();
+
+            return await Task.Run(() => this.PartialView("_EditUser", userViewModel));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditUser([FromForm]UserViewModel userViewModel)
+        {
+            await this._anonymousHubContext.Clients.
+                        Client(userViewModel.ConnectionId).SendAsync("progressBarUpdate", "0");
+
+            User user = new User();
+            user = this._mapper.Map<User>(userViewModel);
+
+            await this._anonymousHubContext.Clients.
+                     Client(userViewModel.ConnectionId).SendAsync("progressBarUpdate", "40");
+
+            await this._adminService.EditUser(user);
+
+            await this._anonymousHubContext.Clients.
+                     Client(userViewModel.ConnectionId).SendAsync("progressBarUpdate", "80");
+
+            dynamic ajaxReturn = new JObject();
+            ajaxReturn.Status = "Success";
+            ajaxReturn.UserId = userViewModel.UserId;
+            ajaxReturn.GetGoodJobVerb = GoodWorkVerbs.GetGoodJobVerb();
+            ajaxReturn.Message = "UserName" + " - user details updated successfully";
+
+            await this._anonymousHubContext.Clients.
+                    Client(userViewModel.ConnectionId).SendAsync("progressBarUpdate", "100");
+
+            return this.Json(ajaxReturn);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDeleteUserPartialView(long userId)
+        {
+            List<User> users = await this._adminService.GetUsers();
+
+            List<UserViewModel> usersViewModel = new List<UserViewModel>();
+
+            usersViewModel = this._mapper.Map<List<UserViewModel>>(users);
+
+            var userViewModel = usersViewModel.Where(x => x.UserId == userId).FirstOrDefault();
+
+            return await Task.Run(() => this.PartialView("_DeleteUser", userViewModel));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser([FromForm]UserViewModel userViewModel)
+        {
+            await this._anonymousHubContext.Clients.
+                        Client(userViewModel.ConnectionId).SendAsync("progressBarUpdate", "0");
+
+            User user = new User();
+            user.UserId = userViewModel.UserId;
+            user.ModifiedBy = 5;
+
+            await this._anonymousHubContext.Clients.
+                     Client(userViewModel.ConnectionId).SendAsync("progressBarUpdate", "40");
+
+            await this._adminService.DeleteUser(user);
+
+            dynamic ajaxReturn = new JObject();
+            ajaxReturn.Status = "Success";
+            ajaxReturn.UserId = userViewModel.UserId;
+            ajaxReturn.GetGoodJobVerb = GoodWorkVerbs.GetGoodJobVerb();
+            ajaxReturn.Message = "UserName" + " - user sucessfully delete from application.";               
+
+            await this._anonymousHubContext.Clients.
+                    Client(userViewModel.ConnectionId).SendAsync("progressBarUpdate", "100");
+
+            return this.Json(ajaxReturn);
         }
     }
 }

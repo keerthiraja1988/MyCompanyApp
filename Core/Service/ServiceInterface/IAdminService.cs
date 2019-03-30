@@ -13,5 +13,9 @@
         Task<List<User>> GetUsers();
 
         Task<long> AddUser(User user);
+
+        Task DeleteUser(User user);
+
+        Task EditUser(User user);
     }
 }

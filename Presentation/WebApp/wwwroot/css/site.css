@@ -29,7 +29,7 @@ html {
   box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
 }
 
-button.accept-policy {
+.button.accept-policy {
   font-size: 1rem;
   line-height: inherit;
 }
@@ -156,3 +156,17 @@ body {
 }
 
 /* Loader Icon End */
+
+
+/* NonFactors.Grid.Mvc6 Starts */
+.userManagementGridWidth {
+    width: 216px;
+    text-align: center;
+}
+
+
+.mvc-grid th, .mvc-grid td {
+    padding: 7px !important;
+}
+
+/* NonFactors.Grid.Mvc6 End */

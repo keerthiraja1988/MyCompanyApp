@@ -1,0 +1,64 @@
+﻿@model WebApp.Models.UserViewModel
+<div id="deleteUserPartialView">
+
+    <p>Do you want to delete user @Model.UserName from application</p>
+
+    @Html.HiddenFor(x => x.ConnectionId, new { @id = "hdnDeleteUserConnectionId" })
+
+    @Html.HiddenFor(x => x.UserId, new { @id = "hdnUserIdForDelete"})
+
+    <script>
+        $('#modalLoadingIcon').modal('hide');
+
+        setTimeout(
+            function () {
+                $('#hdnDeleteUserConnectionId').val($('#signalRconnectionId').val());
+            }, 300);
+
+        function deleteUserOnBegin() {
+            $('#modalProgressBar').modal('show');
+        };
+
+        function deleteUserOnComplete(xhr) {
+            setTimeout(
+                function () {
+                    $('#modalProgressBar').modal('hide');
+                }, 500);
+        };
+
+        function deleteUserOnSuccess(data, status, xhr) {
+
+            $('#modalDeleteUser').modal('hide');
+            $('#deleteUserPartialView').remove();
+
+            if (jQuery.type(data.Status) === "undefined") {
+
+            }
+            else {
+                $('#modalAddUser').modal('hide');
+
+                Swal.fire(
+                    data.GetGoodJobVerb,
+                    data.Message,
+                    'success'
+                );
+            }
+        };
+
+        function deleteUserOnFailure(error) {
+            swalWithBootstrapButtons.fire({
+                title: 'Oops...',
+                text: "An error occurred while processing your request",
+                type: 'error',
+                showCancelButton: false,
+                confirmButtonText:'<i class="fas fa-check"></i> Ok'
+            });
+
+            setTimeout(
+                function () {
+                    $('#modalProgressBar').modal('hide');
+                }, 500);
+        };
+    </script>
+
+</div>

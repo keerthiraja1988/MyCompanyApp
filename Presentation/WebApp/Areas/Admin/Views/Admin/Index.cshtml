@@ -1,15 +1,59 @@
-﻿
+﻿@model IEnumerable<WebApp.Models.UserViewModel>
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>User Management5</h1>
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-6">
+                <h4>  <i class="fas fa-users"></i>  Users </h4>
+            </div>
+            <div class="col-6">
+                <button type="button" id="btnGetAddUserPartialView" class="btn btn-primary float-right"
+                        onclick="GetAddUserPartialView('@Url.Action("GetAddUserPartialView", "Admin", new { Area = "Admin" })')">
+                    <i class="fas fa-user-plus"></i> Add User
+                </button>
+            </div>
+        </div>
+        
+    </div>
+    <div class="card-body">
 
-<button type="button" id="btnGetAddUserPartialView" class="btn btn-primary btn-lg"
-        onclick="GetAddUserPartialView('@Url.Action("GetAddUserPartialView", "Admin", new { Area = "Admin" })')">
-    <i class="fas fa-user-plus"></i> Add User
-</button>
+        @(Html
+                        .Grid(Model)
+                        .Build(columns =>
+                        {
+
+                            columns.Add(model => model.UserId).Titled("User Id");
+                            columns.Add(model => model.UserName).Titled("User Name");
+                            columns.Add(model => model.FirstName).Titled("First Name");
+                            columns.Add(model => model.LastName).Titled("Last Name");
+                            columns.Add(model => model.MiddleName).Titled("Middle Name");
+                            columns.Add(model => model.CreatedOn).Titled("Created On");
+                            columns.Add(model => model.CreatedBy).Titled("Created By");
+                            columns.Add(model =>
+                              $"<button class='btn btn-secondary btn-sm' id=\"{model.UserId}\" " +
+                              $"onclick='GetEditUserPartialView(\"{@Url.Action("GetEditUserPartialView", "Admin", new { Area = "Admin", userID = model.UserId })}\")'>" +
+                              $"<i class='fas fa-user-edit'></i> Edit</button>"
+
+                              +
+                              $"<button class='btn btn-danger ml-2 btn-sm' id=\"{model.UserId}\"" +
+                              $"onclick='GetDeleteUserPartialView(" +
+                              $"\"{@Url.Action("GetDeleteUserPartialView", "Admin", new { Area = "Admin", userID = model.UserId})}\")'>" +
+
+                              $"<i class='fas fa-user-times'></i>Delete</button>"
+                          ).Encoded(false).Titled("Manage").AppendCss("userManagementGridWidth"); ;
+
+                        })
+                        .Empty("No data found")
+                        //.Filterable()
+                        //.Sortable()
+                        .Pageable()
+        )
+    </div>
+</div>
 
 <div class="modal" id="modalAddUser" data-backdrop="static">
     <div class="modal-dialog modal-lg">
@@ -24,19 +68,86 @@
                   method="post" data-ajax="true"
                   data-ajax-begin="addUserOnBegin" data-ajax-complete="addUserOnComplete"
                   data-ajax-success="addUserOnSuccess" data-ajax-failure="addUserOnFailure"
-                data-ajax-mode="replace"
-                  data-ajax-update="#ajaxresult" >
-                <div class="modal-body" id="ajaxresult">
-                    @*@await Html.PartialAsync("_AddUser1")*@
+                  data-ajax-mode="replace"
+                  data-ajax-update="#ajaxresult">
+                <div class="modal-body" id="ajaxresult">                    
 
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-user-plus"></i>Create</button>
+                        <i class="fas fa-user-plus"></i>Create
+                    </button>
                     <button type="button" id="btnAddUserCancel" onclick="AddUserCancelOnClick()"
-                            class="btn btn-secondary">
-                        <i class="fas fa-times"></i>Cancel</button>
+                            class="btn btn-dark">
+                        <i class="fas fa-times"></i>Cancel
+                    </button>
 
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="modalEditUser" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formEditUser" asp-area="Admin" asp-controller="Admin" asp-action="EditUser"
+                  method="post" data-ajax="true"
+                  data-ajax-begin="editUserOnBegin" data-ajax-complete="editUserOnComplete"
+                  data-ajax-success="editUserOnSuccess" data-ajax-failure="editUserOnFailure"
+                  data-ajax-mode="replace"
+                  data-ajax-update="#ajaxEditUserResult">
+                <div class="modal-body" id="ajaxEditUserResult">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>Save
+                    </button>
+                    <button type="button" id="btnAddUserCancel" onclick="EditUserCancelOnClick()"
+                            class="btn btn-dark">
+                        <i class="fas fa-times"></i>Cancel
+                    </button>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal" id="modalDeleteUser" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Delete User</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formEditUser" asp-area="Admin" asp-controller="Admin" asp-action="DeleteUser"
+                  method="post" data-ajax="true"
+                  data-ajax-begin="deleteUserOnBegin" data-ajax-complete="deleteUserOnComplete"
+                  data-ajax-success="deleteUserOnSuccess" data-ajax-failure="deleteUserOnFailure"
+                  data-ajax-mode="replace"
+                  data-ajax-update="#ajaxDeleteUserResult">
+                <div class="modal-body" id="ajaxDeleteUserResult">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-check"></i>Yes, Delete!
+                    </button>
+                    <button type="button" id="btnAddUserCancel" onclick="DeleteUserCancelOnClick()"
+                            class="btn btn-dark">
+                        <i class="fas fa-times"></i>No
+                    </button>
                 </div>
             </form>
         </div>
@@ -52,15 +163,33 @@
 </div>
 
 <script>
-   
-    function GetAddUserPartialView(acionUrl) {
-       test()
+    function GetAddUserPartialView(acionUrl) {        
         $('#modalAddUser').modal('show');
+        $('#modalLoadingIcon').modal('show');
         $('#ajaxresult').load(acionUrl);
     };
 
+    function GetEditUserPartialView(acionUrl) {       
+        $('#modalEditUser').modal('show');
+        $('#modalLoadingIcon').modal('show');
+        $('#ajaxEditUserResult').load(acionUrl);
+    };
+
+    function GetDeleteUserPartialView(acionUrl) {
+        $('#modalDeleteUser').modal('show');
+        $('#modalLoadingIcon').modal('show');
+        $('#ajaxDeleteUserResult').load(acionUrl);
+    };
+
     function AddUserCancelOnClick() {
-        
         $('#modalAddUser').modal('hide');
+    };
+
+    function EditUserCancelOnClick() {
+        $('#modalEditUser').modal('hide');
+    };
+
+    function DeleteUserCancelOnClick() {
+        $('#modalDeleteUser').modal('hide');
     };
 </script>

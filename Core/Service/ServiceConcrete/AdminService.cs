@@ -25,5 +25,15 @@
         {
             return await this._adminRepository.AddUser(user);
         }
+
+        public async Task DeleteUser(User user)
+        {
+            await this._adminRepository.DeleteUser(user);
+        }
+
+        public async Task EditUser(User user)
+        {
+            await this._adminRepository.EditUser(user);
+        }
     }
 }

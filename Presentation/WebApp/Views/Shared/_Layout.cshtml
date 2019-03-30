@@ -9,7 +9,7 @@
     <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" />
-
+    <link href="~/lib/MvcGrid/mvc-grid.css" rel="stylesheet" />
 
     <script src="~/lib/jquery/dist/jquery.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
@@ -23,6 +23,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
     <script src="~/lib/aspnet/signalr/dist/browser/signalr.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsnlog/2.29.0/jsnlog.min.js"></script>
+
+    <script src="~/lib/MvcGrid/mvc-grid.js"></script>
+
     @RenderSection("Scripts", required: false)
 </head>
 <body>
@@ -49,7 +52,7 @@
                                 Admin
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item"  asp-area="Admin" asp-controller="Admin" asp-action="Index">User Management</a>
+                                <a class="dropdown-item" asp-area="Admin" asp-controller="Admin" asp-action="Index">User Management</a>
                                 <a class="dropdown-item" href="#">Another action</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#">Something else here</a>
@@ -72,31 +75,23 @@
                         </li>
 
                     </ul>
-                   
+
                 </div>
             </div>
         </nav>
-      </header>
+    </header>
     <div class="container-fluid">
         <partial name="_CookieConsentPartial" />
-        <main role="main" class="pb-3">
+        <main role="main" class="pb-3 pt-2">
             @RenderBody()
         </main>
     </div>
 
     <footer class="border-top footer text-muted">
-        <div id="debugDiv">
-
-        </div>
-        <div class="container">
-            &copy; 2019 - WebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-
-        <div class="modal show" id="modalLoadingIcon"
-             tabindex="-1" role="dialog"
-             data-backdrop="static" data-keyboard="false"
-             style="z-index:99999;background-color: rgba(0, 0, 0, 0.32);">
-            <div class="modal-dialog modal-dialog-centered" role="document">
+        <div id="modalLoadingIcon"
+            class="modal show" data-backdrop="static" style="z-index: 1600;"
+             data-keyboard="false" tabindex="-1" data-backdrop-limit="1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content d-flex align-items-center" style="    border: 0px; background-color: transparent;box-shadow: none;border-bottom: 0px;">
                     <div class="loader"></div>
                     <span style="color:white; font-size:25px; padding-top: 10px;">Processing, Please Wait...</span>
@@ -130,6 +125,7 @@
                 $(document).ajaxComplete(function () {
                     $.validator.unobtrusive.parse(document);
                 });
+
 
                 $(document).ready(function () {
 
@@ -193,18 +189,32 @@
                     if (percentage == '100') {
                         setTimeout(
                             function () {
+                                $('#progrsEndValue').val('0');
+                                //$('#modalProgressBar').modal('hide');
 
-                                $('#modalProgressBar').modal('hide');
-
-                            }, delay);
+                            }, 1000);
                     }
                 });
 
-              
+
             </script>
         </div>
     </footer>
+    <script>
+        +[].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
+            +               new MvcGrid(element);
+        });
 
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-primary',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false,
+        });
+
+
+    </script>
 
 </body>
 </html>

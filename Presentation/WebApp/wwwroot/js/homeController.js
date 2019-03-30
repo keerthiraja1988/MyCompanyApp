@@ -1,6 +1,10 @@
 ﻿(
     function (publicMethod, $) {
 
+        publicMethod.getSignarRConnectionId = function () {
+            return $('#signalRconnectionId').val();
+        },
+
         publicMethod.ShowLoaddingIndicator = function () {
             $('#loadingIconModal').modal('show');
         },
