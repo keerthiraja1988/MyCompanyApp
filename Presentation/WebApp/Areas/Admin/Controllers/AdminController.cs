@@ -28,7 +28,7 @@
         private readonly IHubContext<AnonymousClientHub> _anonymousHubContext;
 
         public AdminController(
-                IAdminService adminService, 
+                IAdminService adminService,
                 IMapper mapper,
                 IHubContext<AnonymousClientHub> anonymousHubContext)
         {
@@ -40,6 +40,12 @@
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            return await Task.Run(() => this.View());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUsers()
+        {
             var userId = this.User.FindFirstValue(ClaimTypes.Name);
 
             List<User> users = await this._adminService.GetUsers();
@@ -48,7 +54,7 @@
 
             usersViewModel = this._mapper.Map<List<UserViewModel>>(users);
 
-            return await Task.Run(() => this.View(usersViewModel));
+            return await Task.Run(() => this.PartialView("_GetUsers", usersViewModel));
         }
 
         [HttpGet]
@@ -120,7 +126,7 @@
 
             var userViewModel = usersViewModel.Where(x => x.UserId == userId).FirstOrDefault();
 
-            return await Task.Run(() => this.PartialView("_EditUser", userViewModel));
+            return await Task.Run(() => this.PartialView("_EditUser1", userViewModel));
         }
 
         [HttpPost]
@@ -185,7 +191,7 @@
             ajaxReturn.Status = "Success";
             ajaxReturn.UserId = userViewModel.UserId;
             ajaxReturn.GetGoodJobVerb = GoodWorkVerbs.GetGoodJobVerb();
-            ajaxReturn.Message = "UserName" + " - user sucessfully delete from application.";               
+            ajaxReturn.Message = "UserName" + " - user sucessfully delete from application.";
 
             await this._anonymousHubContext.Clients.
                     Client(userViewModel.ConnectionId).SendAsync("progressBarUpdate", "100");

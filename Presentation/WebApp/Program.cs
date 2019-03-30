@@ -37,6 +37,9 @@
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>().UseNLog();
+                //.UseContentRoot(Directory.GetCurrentDirectory())
+                .UseIISIntegration() // IMPORTANT!!!
+                .UseStartup<Startup>()
+                .UseNLog();
     }
 }

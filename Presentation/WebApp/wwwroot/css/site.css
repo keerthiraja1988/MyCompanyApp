@@ -105,11 +105,12 @@ body {
     }
 
 .swal2-container > .swal2-modal {
-   
     border-radius: 2px;
 }
 
-
+.swal2-popup #swal2-content {
+    font-weight: normal;
+}
 
 /* Loader Icon Start */
 .loaderOverlay {

@@ -31,8 +31,6 @@
         }
 
         [Roles("Admin")]
-       // [Authorize(Policy = "Admin")]
-
         public IActionResult Index()
         {
             var vvv = this.User.GetLoggedInUserDetails();
@@ -80,7 +78,6 @@
 
             claims.Add(new Claim(ClaimTypes.Role, "Authenticated"));
             claims.Add(new Claim(ClaimTypes.Role, "Admin"));
-           // claims.Add(new Claim(ClaimTypes.Role, "User"));
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
             // create principal

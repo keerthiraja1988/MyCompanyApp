@@ -1,6 +1,5 @@
 ﻿@model WebApp.Models.UserViewModel
 
-
 <div class="row">
     <div class="col-sm">
         <div class="form-group">
@@ -8,7 +7,6 @@
             <label asp-for="UserName"></label>  <label> *</label>
             <input type="text" asp-for="UserName"
                    class="form-control" id="txtUserName"
-                 
                    placeholder="Enter User Name">
             <span asp-validation-for="UserName" class="text-danger small pl-2"></span>
         </div>
@@ -19,13 +17,7 @@
             <label asp-for="UserId"></label>
 
             @Html.HiddenFor(x => x.ConnectionId, new { @id = "txtHdnConnectionId" })
-
-            @*<input type="hidden" id="txtHdnConnectionId" name="txtHdnConnectionId"
-                asp-for="ConnectionId" />*@
-            @*<input disabled="disabled" type="text" asp-for="ConnectionId"
-                class="form-control" id="txtHdnConnectionId"
-                placeholder="Enter User Id">*@
-
+            @Html.HiddenFor(x => x.UserId, new { @id = "hdnUserId" })
             <input disabled="disabled" type="text" asp-for="UserId"
                    class="form-control" id="txtUserId"
                    placeholder="Enter User Id">
@@ -72,36 +64,34 @@
 </div>
 
 <script>
-    
     $('#modalLoadingIcon').modal('hide');
+
     setTimeout(
         function () {
             $('#txtHdnConnectionId').val($('#signalRconnectionId').val());
         }, 300);
 
-     var getAddUserRolesPartialViewUrl = '@Url.Action("GetAddUserRolesPartialView", "Admin", new { Area = "Admin" })';
-
-
-    function addUserOnBegin() {
+    function editUserOnBegin() {
         $('#modalProgressBar').modal('show');
     };
 
+    function editUserOnComplete(xhr) {
+        
+    };
 
-    function addUserOnComplete(xhr) {
+    function editUserOnSuccess(data, status, xhr) {
         new MvcGrid(document.querySelector('#gridGetsUsersAjax')).reload();
+        $('#modalEditUser').modal('hide');  
+
         setTimeout(
             function () {
                 $('#modalProgressBar').modal('hide');
             }, 500);
-    };
 
-    function addUserOnSuccess(data, status, xhr) {
-       
         if (jQuery.type(data.Status) === "undefined") {
 
         }
         else {
-            $('#modalAddUser').modal('hide');
 
             swalWithBootstrapButtons.fire({
                 title: data.GetGoodJobVerb,
@@ -110,12 +100,13 @@
                 showCancelButton: false,
                 confirmButtonText: '<i class="fas fa-check"></i> Ok'
             });
-
-            $('#loadAddUserRolePartialView').load(getAddUserRolesPartialViewUrl + '?userId=' + data.UserId);
         }
     };
-    function addUserOnFailure(XMLHttpRequest, textStatus, errorThrown) {
+
+    function editUserOnFailure(XMLHttpRequest, textStatus, errorThrown) {
         new MvcGrid(document.querySelector('#gridGetsUsersAjax')).reload();
+
+        $('#modalEditUser').modal('hide');
 
         swalWithBootstrapButtons.fire({
             title: 'Oops...',

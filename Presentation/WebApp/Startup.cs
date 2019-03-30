@@ -28,6 +28,7 @@
     using NLog;
     using WebApp.Hubs;
     using WebApp.Infrastructure;
+    using WebApp.Infrastructure.CustomMiddleware;
     using WebApp.Infrastructure.Security;
 
     public class Startup
@@ -141,6 +142,17 @@
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            // Add a sample response header 
+            app.Use(async (context, nextMiddleware) =>
+            {
+                context.Response.OnStarting(() =>
+                {
+                    context.Response.Headers.Add("RequestId", context.RequestId());
+                    return Task.FromResult(0);
+                });
+                await nextMiddleware();
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -153,20 +165,16 @@
                 app.UseHsts();
             }
 
-          
             app.UseElmah();
+            //app.ConfigureExceptionHandler();
             app.UseHttpsRedirection();
-            // Configure JSNLog
-            var jsnlogConfiguration =
-                       new JsnlogConfiguration
-                       {
-                         
 
-                        //serverSideLevel = "5000",
+            // Configure JSNLog
+            var jsnlogConfiguration = new JsnlogConfiguration
+            {
                     serverSideMessageFormat = "Url : %url %newline* RequestId : %requestId  %entryId %newline*" +
-                        "Message : %message %newline* %jsonmessage %newline*" +
-                        "Sent: %date, Browser: %userAgent %newline*" ,
-                              
+                                                "Message : %message %newline* %jsonmessage %newline*" +
+                                                "Sent: %date, Browser: %userAgent %newline*" ,
                            serverSideLogger = "WebApp.Jslogger"
                        };
 

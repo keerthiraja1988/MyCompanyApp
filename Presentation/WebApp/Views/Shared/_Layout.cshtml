@@ -26,29 +26,30 @@
 
     <script src="~/lib/MvcGrid/mvc-grid.js"></script>
 
-    @RenderSection("Scripts", required: false)
+ 
 </head>
 <body>
-    <header>
+    <header id="topheader">
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">Navbar</a>
+                <a class="navbar-brand" href="#">App Name</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <li class="nav-item">
+                            <a class="nav-link" id="navbarHome" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy"
+                               id="navbarContact">Contact</a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarAdminDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Admin
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -61,21 +62,46 @@
                         <li class="nav-item">
                             <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
                         </li>
-
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Dropdown
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                            </div>
-                        </li>
-
                     </ul>
 
+                    <div style="
+                    display: flex;
+                    padding-bottom: 2px;
+                    padding-right: 7px;
+                " class="d-flex justify-content-end">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <a style="color:white; background-color:#15134e; padding-left: 5px;padding-right: 5px;" onclick="JsMain.GetLoggedInUserDetails('@Url.Action("GetLoggedInUserDetails", "UserAccount",  new { Area = "Security" })')"
+                               class="btn btn-primary" title="Manage">
+                                Hello <span class="blockquote">@User.Identity.Name!</span>
+                            </a>
+
+                            <form asp-area="Security" asp-controller="UserAccount" asp-action="Logout"
+                                  onclick="JsMain.ShowLoaddingIndicator()"
+                                  asp-route-returnUrl="@Url.Action("Index", "UserAccount", new { area = "UserAccount" })"
+                                  method="post" id="logoutForm" class="navbar-right">
+                                <ul class="nav navbar-nav navbar-right">
+                                    <li>
+                                        <button type="submit" style="color:white;padding-right: 3px;margin-left: 9px;" class="btn btn-info">
+                                            <i style="font-size: 20px;margin-top: 6px;margin-left: 0px;margin-right: 0px;" class="fas fa-power-off"></i>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </form>
+                        }
+                        else
+                        {
+                            <ul class="nav navbar-nav navbar-right">
+                                <li class="nav-item">
+                                    <a style="color:white" class="nav-link" asp-area="Security" asp-controller="UserAccount" asp-action="UserAccount">Register</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a style="color:white" class="nav-link" asp-area="Security" asp-controller="UserAccount"
+                                       asp-action="UserAccount">Login</a>
+                                </li>
+                            </ul>
+                        }
+                    </div>
                 </div>
             </div>
         </nav>
@@ -89,7 +115,7 @@
 
     <footer class="border-top footer text-muted">
         <div id="modalLoadingIcon"
-            class="modal show" data-backdrop="static" style="z-index: 1600;"
+             class="modal show" data-backdrop="static" style="z-index: 1600;"
              data-keyboard="false" tabindex="-1" data-backdrop-limit="1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content d-flex align-items-center" style="    border: 0px; background-color: transparent;box-shadow: none;border-bottom: 0px;">
@@ -145,6 +171,10 @@
                     return false;
                 };
 
+                $('#topheader .navbar-nav a').on('click', function () {
+                    $('#topheader .navbar-nav').find('li.active').removeClass('active');
+                });
+
                 "use strict";
 
                 var connection = new signalR.HubConnectionBuilder().withUrl("/anonymousClientHub").build();
@@ -171,7 +201,6 @@
                     $("#dynamic")
                         .attr("aria-valuenow", percentage);
 
-
                     var delay = 200;
 
                     $("#dynamic")
@@ -190,15 +219,17 @@
                         setTimeout(
                             function () {
                                 $('#progrsEndValue').val('0');
-                                //$('#modalProgressBar').modal('hide');
+
+                                //$("#dynamic").attr("aria-valuenow", '0');
+                                //$("#dynamic").css("width", '0' + "%")
+                                //$("#dynamic").prop('Counter', '0')
 
                             }, 1000);
                     }
                 });
-
-
             </script>
         </div>
+        @RenderSection("Scripts", required: false)
     </footer>
     <script>
         +[].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
@@ -212,9 +243,6 @@
             },
             buttonsStyling: false,
         });
-
-
     </script>
-
 </body>
 </html>
