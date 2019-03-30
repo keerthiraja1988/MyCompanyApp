@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Domain
+﻿namespace Domain
 {
+    using System;
+
     public class User
     {
         public long UserId { get; set; }

@@ -1,16 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace WebApp.Infrastructure.Security
+﻿namespace WebApp.Infrastructure.Security
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Authorization;
+
     public class RolesAttribute : AuthorizeAttribute
     {
         public RolesAttribute(params string[] roles)
         {
-            Roles = String.Join(",", roles);
+            this.Roles = string.Join(",", roles);
         }
     }
 }

@@ -1,13 +1,13 @@
-﻿using AutoMapper;
-using Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using WebApp.Models;
-
-namespace WebApp.Infrastructure.Automapper
+﻿namespace WebApp.Infrastructure.Automapper
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using AutoMapper;
+    using Domain;
+    using WebApp.Models;
+
     public class AutomapperProfile : Profile
     {
         public AutomapperProfile()

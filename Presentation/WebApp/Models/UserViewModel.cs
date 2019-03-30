@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace WebApp.Models
+﻿namespace WebApp.Models
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     public class UserViewModel
     {
         [Display(Name = "User Id")]
@@ -25,15 +25,12 @@ namespace WebApp.Models
         [StringLength(60, ErrorMessage = "Do not enter more than 60 characters")]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
-
         public string MiddleName { get; set; }
         public bool? IsActive { get; set; }
         public DateTime? CreatedOn { get; set; }
         public long? CreatedBy { get; set; }
         public DateTime? ModifiedOn { get; set; }
         public long? ModifiedBy { get; set; }
-
         public string ConnectionId { get; set; }
-
     }
 }

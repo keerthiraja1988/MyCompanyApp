@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace WebApp.Hubs
+﻿namespace WebApp.Hubs
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.SignalR;
+
     public class AnonymousClientHub : Hub
     {
-
         public string GetConnectionId()
         {
             return Context.ConnectionId;

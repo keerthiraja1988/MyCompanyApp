@@ -1,46 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
-using AutoMapper;
-using CrossCutting.Logging;
-using ElmahCore.Mvc;
-using ElmahCore.Sql;
-using IOC;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.CookiePolicy;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using NLog;
-using WebApp.Hubs;
-using WebApp.Infrastructure;
-using WebApp.Infrastructure.Security;
-
-namespace WebApp
+﻿namespace WebApp
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Autofac;
+    using Autofac.Extensions.DependencyInjection;
+    using AutoMapper;
+    using CrossCutting.Logging;
+    using ElmahCore.Mvc;
+    using ElmahCore.Sql;
+    using IOC;
+    using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.CookiePolicy;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.HttpsPolicy;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Authorization;
+    using Microsoft.AspNetCore.Mvc.Razor;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using NLog;
+    using WebApp.Hubs;
+    using WebApp.Infrastructure;
+    using WebApp.Infrastructure.Security;
+
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            GoodWorkVerbs.RegisterGoodJobVerbs();
-            Configuration = configuration;
-        }
-
+        private Logger logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
         public IConfiguration Configuration { get; }
-
         public IContainer ApplicationContainer { get; private set; }
 
-        Logger logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+        public Startup(IConfiguration configuration)
+        {
+            this.Configuration = configuration;
+            GoodWorkVerbs.RegisterGoodJobVerbs();
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -58,7 +56,10 @@ namespace WebApp
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-                 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+
+                 .AddCookie(
+                             CookieAuthenticationDefaults.AuthenticationScheme,
+                             options =>
                  {
                      options.AccessDeniedPath = new PathString("/Home/AccessDenied");
                      options.LoginPath = new PathString("/Home/Login");
@@ -79,26 +80,6 @@ namespace WebApp
 
             services.AddAuthorization();
 
-            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            //  .AddCookie(options =>
-            //  {
-            //      options.LoginPath = "/Home/Login";
-            //      options.AccessDeniedPath = "/Home/AccessDenied";
-            //  });
-
-            //services.AddAuthorization(options =>
-            //{
-            //    options.AddPolicy("Authenticated",
-            //        policy => policy.RequireClaim("Authenticated"));
-
-            //    options.AddPolicy("Admin",
-            //        policy => policy.RequireClaim("Admin"));
-
-            //    options.AddPolicy("Test",
-            //       policy => policy.RequireClaim("Test"));
-            //});
-
-
             services.AddAutoMapper();
 
             services.Configure<RazorViewEngineOptions>(options =>
@@ -112,32 +93,29 @@ namespace WebApp
             services.AddSingleton<AnonymousClientHub>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            //services.AddAntiforgery(options =>
-            //{
-            //    // new API
-            //    // ReSharper disable once StringLiteralTypo
-            //    options.Cookie.Name = "AntiforgeryCookie";
+            services.AddAntiforgery(options =>
+            {
+                // new API
+                // ReSharper disable once StringLiteralTypo
+                options.Cookie.Name = "AntiforgeryCookie";
 
-            //    options.Cookie.Path = "/";
-            //    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            //});
+                options.Cookie.Path = "/";
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            });
 
             services.AddHttpsRedirection(options =>
             {
                 options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
                 options.HttpsPort = 443;
             });
-
-
-
+                       
             services.AddElmah(options =>
             {
                 //options.CheckPermissionAction = context => context.User.Identity.IsAuthenticated;
                 options.Path = @"elmah";
             });
             services.AddElmah<SqlErrorLog>(options =>
-            {
-               
+            {               
                 options.ConnectionString = "Data Source=.;Initial Catalog=MyCompanyAppDB;Integrated Security=True"; // DB structure see here: https://bitbucket.org/project-elmah/main/downloads/ELMAH-1.2-db-SQLServer.sql
             });
 
@@ -149,8 +127,8 @@ namespace WebApp
             builder.Populate(services);
             builder.RegisterModule(new ServiceIOC("InstancePerLifetimeScope"));
             builder.RegisterModule(new DatabaseIOC("Data Source=.;Initial Catalog=MyCompanyAppDB;Integrated Security=True", "InstancePerLifetimeScope"));
-            builder.Register(c => new ServiceClassLoggingInterceptor(logger)).InstancePerLifetimeScope();
-            builder.Register(c => new RepositoryInterfaceLogggerInterceptor(logger)).InstancePerLifetimeScope();
+            builder.Register(c => new ServiceClassLoggingInterceptor(this.logger)).InstancePerLifetimeScope();
+            builder.Register(c => new RepositoryInterfaceLogggerInterceptor(this.logger)).InstancePerLifetimeScope();
 
             this.ApplicationContainer = builder.Build();
 
@@ -168,9 +146,11 @@ namespace WebApp
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseElmah();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -194,8 +174,7 @@ namespace WebApp
             {
                 routes.MapRoute(
                      name: "areas",
-                     template: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
-                        );
+                     template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");

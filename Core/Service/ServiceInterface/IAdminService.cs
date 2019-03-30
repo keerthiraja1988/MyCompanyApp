@@ -1,12 +1,12 @@
-﻿using Autofac.Extras.DynamicProxy;
-using CrossCutting.Logging;
-using Domain;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace ServiceInterface
+﻿namespace ServiceInterface
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Autofac.Extras.DynamicProxy;
+    using CrossCutting.Logging;
+    using Domain;
+
     [Intercept(typeof(ServiceClassLoggingInterceptor))]
     public interface IAdminService
     {

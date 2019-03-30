@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Domain.Admin
+﻿namespace Domain.Admin
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+
     public class UserRole
     {
-        public Int64 UserId { get; set; }
+        public long UserId { get; set; }
 
         public string UserName { get; set; }
 
@@ -17,7 +17,7 @@ namespace Domain.Admin
     {
         public Guid UserAuthenticationId { get; set; }
 
-        public Int64 UserId { get; set; }
+        public long UserId { get; set; }
 
         public string UserName { get; set; }
 
@@ -32,7 +32,7 @@ namespace Domain.Admin
     {
         public string UserName { get; set; }
 
-        public Int64 UserId { get; set; }
+        public long UserId { get; set; }
 
         public int RoleId { get; set; }
 
@@ -51,5 +51,4 @@ namespace Domain.Admin
         public string RoleName { get; set; }
         public int RoleId { get; set; }
     }
-
 }

@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace CrossCutting
+﻿namespace CrossCutting
 {
+    using System;
+
     public class Class1
     {
     }

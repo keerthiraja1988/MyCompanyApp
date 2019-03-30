@@ -1,12 +1,12 @@
-﻿using Domain;
-using RepositoryInterface;
-using ServiceInterface;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace ServiceConcrete
+﻿namespace ServiceConcrete
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Domain;
+    using RepositoryInterface;
+    using ServiceInterface;
+
     public class AdminService : IAdminService
     {
         private readonly IAdminRepository _adminRepository;
@@ -15,9 +15,10 @@ namespace ServiceConcrete
         {
             this._adminRepository = adminRepository;
         }
+
         public async Task<List<User>> GetUsers()
         {
-            return await this._adminRepository.GetUsers(); 
+            return await this._adminRepository.GetUsers();
         }
 
         public async Task<long> AddUser(User user)

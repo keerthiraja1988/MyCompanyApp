@@ -1,22 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using AutoMapper;
-using Domain;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json.Linq;
-using ServiceInterface;
-using WebApp.Hubs;
-using WebApp.Infrastructure;
-using WebApp.Infrastructure.Filters;
-using WebApp.Models;
-
-namespace WebApp.Areas.Admin.Controllers
+﻿namespace WebApp.Areas.Admin.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using AutoMapper;
+    using Domain;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SignalR;
+    using Newtonsoft.Json.Linq;
+    using ServiceInterface;
+    using WebApp.Hubs;
+    using WebApp.Infrastructure;
+    using WebApp.Infrastructure.Filters;
+    using WebApp.Models;
+
     [AppAuthorization]
     [Area("Admin")]
     public class AdminController : Controller
@@ -26,8 +26,10 @@ namespace WebApp.Areas.Admin.Controllers
         private readonly IMapper _mapper;
         private readonly IHubContext<AnonymousClientHub> _anonymousHubContext;
 
-        public AdminController(IAdminService adminService, IMapper mapper
-                , IHubContext<AnonymousClientHub> anonymousHubContext)
+        public AdminController(
+                IAdminService adminService, 
+                IMapper mapper,
+                IHubContext<AnonymousClientHub> anonymousHubContext)
         {
             this._adminService = adminService;
             this._mapper = mapper;
@@ -45,7 +47,7 @@ namespace WebApp.Areas.Admin.Controllers
 
             usersViewModel = this._mapper.Map<List<UserViewModel>>(users);
 
-            return await Task.Run(() => View());
+            return await Task.Run(() => this.View());
         }
 
         [HttpGet]
@@ -53,36 +55,35 @@ namespace WebApp.Areas.Admin.Controllers
         {
             UserViewModel userViewModel = new UserViewModel();
 
-            return await Task.Run(() => PartialView("_AddUser1", userViewModel));
+            return await Task.Run(() => this.PartialView("_AddUser1", userViewModel));
         }
 
         [HttpPost]
         public async Task<IActionResult> AddUser([FromForm]UserViewModel userViewModel)
         {
-            await _anonymousHubContext.Clients.
+            await this._anonymousHubContext.Clients.
                  Client(userViewModel.ConnectionId).SendAsync("progressBarUpdate", "0");
 
             if (!ModelState.IsValid)
             {
-               
-                await _anonymousHubContext.Clients.
+                await this._anonymousHubContext.Clients.
                    Client(userViewModel.ConnectionId).SendAsync("progressBarUpdate", "100");
 
-                return await Task.Run(() => PartialView("_AddUser1", userViewModel));
+                return await Task.Run(() => this.PartialView("_AddUser1", userViewModel));
             }
 
-            await _anonymousHubContext.Clients.
+            await this._anonymousHubContext.Clients.
              Client(userViewModel.ConnectionId).SendAsync("progressBarUpdate", "20");
 
             User user = new User();
-            user = _mapper.Map<User>(userViewModel);
+            user = this._mapper.Map<User>(userViewModel);
 
-            await _anonymousHubContext.Clients.
+            await this._anonymousHubContext.Clients.
                Client(userViewModel.ConnectionId).SendAsync("progressBarUpdate", "40");
 
             var userId = await this._adminService.AddUser(user);
 
-            await _anonymousHubContext.Clients.
+            await this._anonymousHubContext.Clients.
               Client(userViewModel.ConnectionId).SendAsync("progressBarUpdate", "80");
 
             dynamic ajaxReturn = new JObject();
@@ -92,18 +93,18 @@ namespace WebApp.Areas.Admin.Controllers
             ajaxReturn.Message = userViewModel.UserName + " - user sucessfully created." +
                 " Now you can setup application roles";
 
-            await _anonymousHubContext.Clients.
+            await this._anonymousHubContext.Clients.
                     Client(userViewModel.ConnectionId).SendAsync("progressBarUpdate", "100");
 
-            return Json(ajaxReturn);
+            return this.Json(ajaxReturn);
         }
 
         [HttpGet]
-        public IActionResult GetAddUserRolesPartialView(Int64 userId)
+        public IActionResult GetAddUserRolesPartialView(long userId)
         {
             UserViewModel userViewModel = new UserViewModel();
 
-            return PartialView("_AddUserRoles", userViewModel);
+            return this.PartialView("_AddUserRoles", userViewModel);
         }
     }
 }

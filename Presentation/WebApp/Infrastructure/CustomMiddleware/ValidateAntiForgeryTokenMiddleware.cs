@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Antiforgery;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace WebApp.Infrastructure.CustomMiddleware
+﻿namespace WebApp.Infrastructure.CustomMiddleware
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Antiforgery;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Http;
+
     //public static class ApplicationBuilderExtensions
     //{
     //    public static IApplicationBuilder UseAntiforgeryTokens(this IApplicationBuilder app)

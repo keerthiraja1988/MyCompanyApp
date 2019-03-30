@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using NLog.Web;
-
-namespace WebApp
+﻿namespace WebApp
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+    using NLog.Web;
 
     public class Program
     {
@@ -24,12 +23,9 @@ namespace WebApp
 
                 CreateWebHostBuilder(args).Build().Run();
             }
-
             catch (Exception ex)
             {
-
                 logger.Error(ex, "Stopped program because of exception");
-
                 throw;
             }
             finally

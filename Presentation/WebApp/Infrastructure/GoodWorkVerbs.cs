@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace WebApp.Infrastructure
+﻿namespace WebApp.Infrastructure
 {
-   
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
     public sealed class GoodWorkVerbs
     {
+        private static readonly object Lock = new object();
+        private static Dictionary<int, string> goodJobQuotesData = new Dictionary<int, string>();
+        private static GoodWorkVerbs instance = null;
+
         // A private constructor to restrict the object creation from outside
         private GoodWorkVerbs()
         {
         }
-
-        private static Dictionary<int, string> goodJobQuotesData = new Dictionary<int, string>();
-
 
         public static void RegisterGoodJobVerbs()
         {
@@ -51,8 +51,7 @@ namespace WebApp.Infrastructure
                 i = i + 1;
             }
         }
-
-
+        
         public static string GetGoodJobVerb()
         {
             int verbCount = GoodWorkVerbs.goodJobQuotesData.Count;
@@ -63,23 +62,20 @@ namespace WebApp.Infrastructure
             // Omitted: Check if key exists
             return GoodWorkVerbs.goodJobQuotesData[verbIndex];
         }
-
-        // A private static instance of the same class
-        private static GoodWorkVerbs instance = null;
-        private static readonly object _lock = new object();
+               
         public static GoodWorkVerbs GetInstance()
         {
-            lock (_lock)
+            lock (Lock)
             {
                 // create the instance only if the instance is null
                 if (instance == null)
                 {
                     instance = new GoodWorkVerbs();
                 }
+
                 // Otherwise return the already existing instance
                 return instance;
             }
-
         }
     }
 }

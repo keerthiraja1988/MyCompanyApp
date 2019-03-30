@@ -1,15 +1,15 @@
-﻿using Autofac;
-using Autofac.Extras.DynamicProxy;
-using Insight.Database;
-using RepositoryInterface;
-using ServiceConcrete;
-using ServiceInterface;
-using System;
-using System.Data.Common;
-using System.Data.SqlClient;
-
-namespace IOC
+﻿namespace IOC
 {
+    using System;
+    using System.Data.Common;
+    using System.Data.SqlClient;
+    using Autofac;
+    using Autofac.Extras.DynamicProxy;
+    using Insight.Database;
+    using RepositoryInterface;
+    using ServiceConcrete;
+    using ServiceInterface;
+
     public class ServiceIOC : Module
     {
         private readonly string _lifeTime;
@@ -18,6 +18,7 @@ namespace IOC
         {
             this._lifeTime = lifeTime;
         }
+
         protected override void Load(ContainerBuilder builder)
         {
             if (this._lifeTime == "InstancePerLifetimeScope")

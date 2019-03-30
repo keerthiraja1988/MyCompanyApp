@@ -1,16 +1,16 @@
-﻿using Castle.DynamicProxy;
-using NLog;
-using NLog.Config;
-using NLog.Targets;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CrossCutting.Logging
+﻿namespace CrossCutting.Logging
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Reflection;
+    using System.Runtime.CompilerServices;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Castle.DynamicProxy;
+    using NLog;
+    using NLog.Config;
+    using NLog.Targets;
+
     public class ServiceClassLoggingInterceptor : IInterceptor
     {
         private readonly ILogger _logger;
@@ -28,13 +28,12 @@ namespace CrossCutting.Logging
 
             try
             {
-
                 var logMethodStartEvent = LogEventInfo.Create(LogLevel.Info, invocationTarget,
                                             "Executing method " + methodName);
 
-                logMethodStartEvent.SetCallerInfo(invocationTarget, methodName + " - "
-                                                                        , codeBase, 0);
-                _logger.Log(logMethodStartEvent);
+                logMethodStartEvent.SetCallerInfo(invocationTarget, methodName + " - ",
+                                                                         codeBase, 0);
+                this._logger.Log(logMethodStartEvent);
 
                 invocation.Proceed();
 
@@ -44,36 +43,29 @@ namespace CrossCutting.Logging
 
                 if (isAsync && typeof(Task).IsAssignableFrom(method.ReturnType))
                 {
-                    invocation.ReturnValue = InterceptAsync((dynamic)invocation.ReturnValue, _logger, invocationTarget, methodName, codeBase);
+                    invocation.ReturnValue = InterceptAsync((dynamic)invocation.ReturnValue, this._logger, invocationTarget, methodName, codeBase);
                 }
 
                 if (!isAsync)
                 {
                     var logMethodEndEvent = LogEventInfo.Create(LogLevel.Info, invocationTarget,
-
                                                           "Method Excuted Successfuly " + methodName);
-
-                    logMethodEndEvent.SetCallerInfo(invocationTarget, methodName + " - "
-                                                                            , codeBase, 0);
-
-                    _logger.Log(logMethodEndEvent);
+                    logMethodEndEvent.SetCallerInfo(invocationTarget, methodName + " - ",
+                                                                             codeBase, 0);
+                    this._logger.Log(logMethodEndEvent);
                 }
             }
-
             catch (Exception ex)
             {
                 var logMethodEndEvent = LogEventInfo.Create(LogLevel.Error, invocationTarget,
-
                                 ex, null, "Error Occured on " + methodName +
+                                " | Trace : " + ex.InnerException + ex.Message + ex.StackTrace);
 
-                                " | Trace : " + ex.InnerException + ex.Message + ex.StackTrace
-                                );
+                logMethodEndEvent.SetCallerInfo(invocationTarget, methodName + " - ",
+                                                                        codeBase, 0);
 
-                logMethodEndEvent.SetCallerInfo(invocationTarget, methodName + " - "
-                                                                        , codeBase, 0);
-
-                _logger.Log(logMethodEndEvent);
-                throw ;
+                this._logger.Log(logMethodEndEvent);
+                throw;
             }
         }
 
@@ -86,24 +78,20 @@ namespace CrossCutting.Logging
                 var logMethodEndEvent = LogEventInfo.Create(LogLevel.Info, invocationTarget,
                                                         "Method Excuted Successfuly " + methodName);
 
-                logMethodEndEvent.SetCallerInfo(invocationTarget, methodName + " - "
-                                                                        , codeBase, 0);
+                logMethodEndEvent.SetCallerInfo(invocationTarget, methodName + " - ",
+                                                                         codeBase, 0);
                 _logger.Log(logMethodEndEvent);
             }
-
             catch (Exception ex)
             {
                 var logMethodEndEvent = LogEventInfo.Create(LogLevel.Error, invocationTarget,
-
                                ex, null, "Error Occured on " + methodName +
+                               " | Trace : " + ex.InnerException + ex.Message + ex.StackTrace);
 
-                               " | Trace : " + ex.InnerException + ex.Message + ex.StackTrace
-
-                               );
-                logMethodEndEvent.SetCallerInfo(invocationTarget, methodName + " - "
-                                                                        , codeBase, 0);
+                logMethodEndEvent.SetCallerInfo(invocationTarget, methodName + " - ",
+                                                                         codeBase, 0);
                 _logger.Log(logMethodEndEvent);
-                throw ;
+                throw;
             }
         }
 
@@ -111,41 +99,29 @@ namespace CrossCutting.Logging
         {
             try
             {
-
                 T result = await task.ConfigureAwait(false);
 
                 var logMethodEndEvent = LogEventInfo.Create(LogLevel.Info, invocationTarget,
-
                                                         "Method Excuted Successfuly " + methodName);
 
-                logMethodEndEvent.SetCallerInfo(invocationTarget, methodName + " - "
-
-                                                                        , codeBase, 0);
-
+                logMethodEndEvent.SetCallerInfo(invocationTarget, methodName + " - ",
+                                                                         codeBase, 0);
                 _logger.Log(logMethodEndEvent);
 
                 return result;
             }
-
             catch (Exception ex)
             {
                 var logMethodEndEvent = LogEventInfo.Create(LogLevel.Error, invocationTarget,
-
                               ex, null, "Error Occured on " + methodName +
+                              " | Trace : " + ex.InnerException + ex.Message + ex.StackTrace);
 
-                              " | Trace : " + ex.InnerException + ex.Message + ex.StackTrace
-
-                              );
-                logMethodEndEvent.SetCallerInfo(invocationTarget, methodName + " - "
-
-                                                                        , codeBase, 0);
-
+                logMethodEndEvent.SetCallerInfo(invocationTarget, methodName + " - ",
+                                                                         codeBase, 0);
                 _logger.Log(logMethodEndEvent);
 
-                throw ;
+                throw;
             }
-
         }
     }
 }
-
