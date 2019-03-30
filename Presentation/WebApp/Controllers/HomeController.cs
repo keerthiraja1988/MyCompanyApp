@@ -18,6 +18,7 @@
     using WebApp.Models;
 
     [Authorize]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -29,9 +30,9 @@
             this._httpContextAccessor = httpContextAccessor;
         }
 
-        [Roles("Test")]
+        [Roles("Admin")]
+       // [Authorize(Policy = "Admin")]
 
-        //[Authorize(Policy = "Admin")]
         public IActionResult Index()
         {
             var vvv = this.User.GetLoggedInUserDetails();
@@ -79,14 +80,21 @@
 
             claims.Add(new Claim(ClaimTypes.Role, "Authenticated"));
             claims.Add(new Claim(ClaimTypes.Role, "Admin"));
-
+           // claims.Add(new Claim(ClaimTypes.Role, "User"));
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
             // create principal
             ClaimsPrincipal principal = new ClaimsPrincipal(identity);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-            return this.Redirect(returnUrl);
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return this.Redirect(returnUrl);
+            }
+            else
+            {
+                throw new UnauthorizedAccessException();
+            }
         }
 
         private IActionResult RedirectToLocal(string returnUrl)

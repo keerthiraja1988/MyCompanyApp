@@ -59,6 +59,7 @@
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddUser([FromForm]UserViewModel userViewModel)
         {
             await this._anonymousHubContext.Clients.

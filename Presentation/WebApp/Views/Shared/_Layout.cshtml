@@ -16,40 +16,68 @@
 
 
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/homeController.js"></script>
     <script src="~/lib/jquery-ajax-unobtrusive/src/jquery.unobtrusive-ajax.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
     <script src="~/lib/aspnet/signalr/dist/browser/signalr.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsnlog/2.29.0/jsnlog.min.js"></script>
     @RenderSection("Scripts", required: false)
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebApp</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Navbar</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Admin
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item"  asp-area="Admin" asp-controller="Admin" asp-action="Index">User Management</a>
+                                <a class="dropdown-item" href="#">Another action</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">Something else here</a>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="Index">Privacy</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Dropdown
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="#">Action</a>
+                                <a class="dropdown-item" href="#">Another action</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">Something else here</a>
+                            </div>
                         </li>
+
                     </ul>
+                   
                 </div>
             </div>
         </nav>
-    </header>
-    <div class="container">
+      </header>
+    <div class="container-fluid">
         <partial name="_CookieConsentPartial" />
         <main role="main" class="pb-3">
             @RenderBody()
@@ -57,11 +85,26 @@
     </div>
 
     <footer class="border-top footer text-muted">
+        <div id="debugDiv">
+
+        </div>
         <div class="container">
             &copy; 2019 - WebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
 
-        <div  id="modalProgressBar" class="modal fade" data-backdrop="static"  style="z-index: 1600;"
+        <div class="modal show" id="modalLoadingIcon"
+             tabindex="-1" role="dialog"
+             data-backdrop="static" data-keyboard="false"
+             style="z-index:99999;background-color: rgba(0, 0, 0, 0.32);">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content d-flex align-items-center" style="    border: 0px; background-color: transparent;box-shadow: none;border-bottom: 0px;">
+                    <div class="loader"></div>
+                    <span style="color:white; font-size:25px; padding-top: 10px;">Processing, Please Wait...</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="modalProgressBar" class="modal show" data-backdrop="static" style="z-index: 1600;"
              data-keyboard="false" tabindex="-1" data-backdrop-limit="1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-m modal-dialog-centered" style=" max-width: 50% !important;">
                 <div class="modal-content">
@@ -98,9 +141,13 @@
                             $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
                         }, 0);
                     });
-
-
                 });
+
+                window.onerror = function (msg, url, lineNo, columnNo, error) {
+                    var message = "Error in " + url + " on line " + lineNo + ": " + columnNo + msg + error;
+                    JL("").error(message);
+                    return false;
+                };
 
                 "use strict";
 
@@ -117,9 +164,7 @@
                     return console.error(err.toString());
                 });
 
-                //Signal method invoked from server
-                connection.on("progressBarUpdate", (percentage) => {
-                  
+                connection.on("progressBarUpdate", function (percentage) {
 
                     var progrsEndValue = $('#progrsEndValue').val();
 
@@ -130,7 +175,7 @@
                     $("#dynamic")
                         .attr("aria-valuenow", percentage);
 
-                  
+
                     var delay = 200;
 
                     $("#dynamic")
@@ -139,7 +184,7 @@
                     $("#dynamic").prop('Counter', progrsEndValue).animate({
                         Counter: percentage
                     }, {
-                            duration: delay,                          
+                            duration: delay,
                             step: function (now) {
                                 $(this).text(Math.ceil(now) + '%');
                             }
@@ -150,10 +195,12 @@
                             function () {
 
                                 $('#modalProgressBar').modal('hide');
-                              
+
                             }, delay);
                     }
                 });
+
+              
             </script>
         </div>
     </footer>

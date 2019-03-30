@@ -12,6 +12,7 @@
     using ElmahCore.Mvc;
     using ElmahCore.Sql;
     using IOC;
+    using JSNLog;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.CookiePolicy;
@@ -23,6 +24,7 @@
     using Microsoft.AspNetCore.Mvc.Razor;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using NLog;
     using WebApp.Hubs;
     using WebApp.Infrastructure;
@@ -30,7 +32,7 @@
 
     public class Startup
     {
-        private Logger logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+        private NLog.Logger logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
         public IConfiguration Configuration { get; }
         public IContainer ApplicationContainer { get; private set; }
 
@@ -108,7 +110,7 @@
                 options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
                 options.HttpsPort = 443;
             });
-                       
+
             services.AddElmah(options =>
             {
                 //options.CheckPermissionAction = context => context.User.Identity.IsAuthenticated;
@@ -137,7 +139,7 @@
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -151,8 +153,25 @@
                 app.UseHsts();
             }
 
+          
             app.UseElmah();
             app.UseHttpsRedirection();
+            // Configure JSNLog
+            var jsnlogConfiguration =
+                       new JsnlogConfiguration
+                       {
+                         
+
+                        //serverSideLevel = "5000",
+                    serverSideMessageFormat = "Url : %url %newline* RequestId : %requestId  %entryId %newline*" +
+                        "Message : %message %newline* %jsonmessage %newline*" +
+                        "Sent: %date, Browser: %userAgent %newline*" ,
+                              
+                           serverSideLogger = "WebApp.Jslogger"
+                       };
+
+            app.UseJSNLog(new LoggingAdapter(loggerFactory), jsnlogConfiguration);
+
             app.UseStaticFiles();
 
             app.UseCookiePolicy(new CookiePolicyOptions

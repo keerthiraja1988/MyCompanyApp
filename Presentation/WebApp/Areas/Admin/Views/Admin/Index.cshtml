@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>User Management</h1>
+<h1>User Management5</h1>
 
 <button type="button" id="btnGetAddUserPartialView" class="btn btn-primary btn-lg"
         onclick="GetAddUserPartialView('@Url.Action("GetAddUserPartialView", "Admin", new { Area = "Admin" })')">
@@ -52,13 +52,15 @@
 </div>
 
 <script>
-
+   
     function GetAddUserPartialView(acionUrl) {
+       test()
         $('#modalAddUser').modal('show');
         $('#ajaxresult').load(acionUrl);
     };
 
     function AddUserCancelOnClick() {
+        
         $('#modalAddUser').modal('hide');
     };
 </script>

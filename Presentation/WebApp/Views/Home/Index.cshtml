@@ -1,5 +1,5 @@
 ﻿@using System.Security.Claims;
-
+@using System.Linq;
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -17,7 +17,24 @@
 }
 else
 {
-   
+
+    @*@if(true)
+        {
+
+        }*@
+
+
+    @foreach (var item in @User.Identities.First(u => u.IsAuthenticated &&
+                           u.HasClaim(c => c.Type == ClaimTypes.Role)).FindAll(ClaimTypes.Role))
+    {
+        <h1>
+
+            @item.Value;
+        </h1>
+    }
+
+
+
 
     <h1>
         Hello @User.Identities.First(
