@@ -6,13 +6,18 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Domain.Admin;
     using ElmahCore;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.SignalR;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json.Linq;
+    using ServiceInterface;
+    using WebApp.Hubs;
     using WebApp.Infrastructure;
     using WebApp.Infrastructure.Security;
     using WebApp.Models;
@@ -21,18 +26,26 @@
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public class HomeController : Controller
     {
+        private readonly IAdminService _adminService;
         private readonly ILogger<HomeController> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHubContext<AnonymousClientHub> _anonymousHubContext;
 
-        public HomeController(ILogger<HomeController> logger, IHttpContextAccessor httpContextAccessor)
+        public HomeController(IAdminService adminService,
+                              ILogger<HomeController> logger,
+                              IHttpContextAccessor httpContextAccessor,
+                              IHubContext<AnonymousClientHub> anonymousHubContext)
         {
+            this._adminService = adminService;
             this._logger = logger;
             this._httpContextAccessor = httpContextAccessor;
+            this._anonymousHubContext = anonymousHubContext;
         }
 
         [Roles("Admin")]
         public IActionResult Index()
         {
+
             var vvv = this.User.GetLoggedInUserDetails();
             this._logger.LogInformation("Index page says hello");
             return this.View();
@@ -52,6 +65,13 @@
 
         [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult AccessDeniedPage()
+        {
+            return this.View("AccessDenied");
+        }
+
+        [AllowAnonymous]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult AccessDenied(string returnUrl)
         {
             var isUserAuthenticated = this.User.IsUserAuthenticated();
@@ -67,22 +87,42 @@
         [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl = null)
         {
-            var identity1 = (ClaimsIdentity)HttpContext.User.Identity;
+            var identity = (ClaimsIdentity)HttpContext.User.Identity;
+
+            var userName = identity.Name.Substring(identity.Name.LastIndexOf(@"\") + 1);
+
+            UserAuthenticationModel userAuthentication = new UserAuthenticationModel();
+            userAuthentication.UserName = userName;
+
+            (UserAuthenticationModel userDetail, List<UserRoleModel> userRoles) userDetailAndRoles = await this._adminService.GetUserDetailsForAuthentication(userAuthentication);
+            UserAuthenticationModel userDetai = userDetailAndRoles.userDetail;
+            List<UserRoleModel> userRoles = userDetailAndRoles.userRoles;
 
             List<Claim> claims = new List<Claim>
              {
-                new Claim ("http://example.org/claims/UserName", "UserName", identity1.Name),
-                new Claim(ClaimTypes.Name ,identity1.Name),
+                new Claim ("http://example.org/claims/UserName", "UserName", userDetai.UserName),
+                new Claim(ClaimTypes.Name , userName),
+                new Claim(ClaimTypes.Authentication , "Authenticated"),
                 new Claim("http://example.org/claims/LoggedInTime", "LoggedInTime", DateTime.Now.ToString())
              };
 
-            claims.Add(new Claim(ClaimTypes.Role, "Authenticated"));
-            claims.Add(new Claim(ClaimTypes.Role, "Admin"));
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            foreach (var item in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, item.RoleName));
+            }
+
+            var identityClaims = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
             // create principal
-            ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+            ClaimsPrincipal principal = new ClaimsPrincipal(identityClaims);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+            CookieOptions option = new CookieOptions();
+            option.Expires = DateTime.Now.AddSeconds(10);
+            option.HttpOnly = false;
+            option.Secure = true;
+            option.SameSite = SameSiteMode.Lax;
+            Response.Cookies.Append("AuthenticatedNow", "Yes", option);
 
             if (Url.IsLocalUrl(returnUrl))
             {
@@ -92,6 +132,28 @@
             {
                 throw new UnauthorizedAccessException();
             }
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            var cookies = Request.Cookies;
+
+            if (cookies != null || cookies.Count > 0)
+            {
+                foreach (var item in cookies)
+                {
+                    Response.Cookies.Delete(item.Key);
+                }
+            }
+
+            dynamic ajaxReturn = new JObject();
+            ajaxReturn.Status = "Success";
+            ajaxReturn.Message = "You have been successfully logged out. " +
+                                    "Current window will be closed now";
+
+            return this.Json(ajaxReturn);
         }
 
         private IActionResult RedirectToLocal(string returnUrl)

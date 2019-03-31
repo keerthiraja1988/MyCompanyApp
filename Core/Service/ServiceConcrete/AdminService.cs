@@ -3,7 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using System.Linq;
     using Domain;
+    using Domain.Admin;
     using RepositoryInterface;
     using ServiceInterface;
 
@@ -35,5 +37,15 @@
         {
             await this._adminRepository.EditUser(user);
         }
+
+        #region User Authentication
+        public async Task<(UserAuthenticationModel userDetail, List<UserRoleModel> userRoles)>
+                        GetUserDetailsForAuthentication(UserAuthenticationModel userAuthentication)
+        {
+            var userDetails = await this._adminRepository.GetUserDetailsForAuthentication(userAuthentication);
+            var userRoles = userDetails.Set2.ToList();
+            return (userDetails.Set1.FirstOrDefault(), userRoles);
+        }
+        #endregion
     }
 }

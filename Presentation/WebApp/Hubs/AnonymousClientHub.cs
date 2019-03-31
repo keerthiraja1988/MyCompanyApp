@@ -4,10 +4,18 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.SignalR;
 
     public class AnonymousClientHub : Hub
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public AnonymousClientHub(IHttpContextAccessor httpContextAccessor)
+        {
+            this._httpContextAccessor = httpContextAccessor;
+        }
+
         public string GetConnectionId()
         {
             return Context.ConnectionId;

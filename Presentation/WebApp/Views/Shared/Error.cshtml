@@ -33,12 +33,21 @@
             </div>
             }
 
-            <div class="error-actions pt-4">
-                <a href="\Home" class="btn btn-primary btn-lg" onclick="JsMain.ShowLoaddingIndicator()">
-                    <i class="fas fa-home"></i>
-                    Take Me Home
-                </a>
-            </div>
+                <div class="error-actions pt-4">
+
+                    <a href="\Home" class="btn btn-primary btn-lg" onclick="JsMain.ShowLoaddingIndicator()">
+                        <i class="fas fa-home"></i>
+                        Take Me Home
+                    </a>
+
+                    @if (Model.ShowRequestId)
+                    {
+                        <a href="mailto:companyappSupport@email.com?Subject=Error%20Occured%20In%20-%20MyCompanyApp%20Request%20Id%20=%20 @Model.RequestId" target="_top" class="btn btn-primary btn-lg ml-5">
+                            <i class="fas fa-envelope"></i>
+                            Email To Support
+                        </a>
+                    }
+                </div>
         </div>
     </div>
 </div>

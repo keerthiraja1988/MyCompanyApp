@@ -112,6 +112,15 @@ body {
     font-weight: normal;
 }
 
+.swal2-popup.swal2-toast {
+    border-radius: 2px;
+   
+}
+
+body.swal2-toast-shown .swal2-container.swal2-shown {
+    top: 56px !important;
+}
+
 /* Loader Icon Start */
 .loaderOverlay {
     position: fixed;

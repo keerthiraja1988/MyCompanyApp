@@ -26,7 +26,7 @@
 
     <script src="~/lib/MvcGrid/mvc-grid.js"></script>
 
- 
+
 </head>
 <body>
     <header id="topheader">
@@ -59,6 +59,18 @@
                                 <a class="dropdown-item" href="#">Something else here</a>
                             </div>
                         </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Samples
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" asp-controller="Home" asp-action="AccessDeniedPage">Access Denied</a>
+                                <a class="dropdown-item" asp-controller="Home" asp-action="Error">Error</a>
+
+                            </div>
+                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
                         </li>
@@ -73,21 +85,14 @@
                         {
                             <a style="color:white; background-color:#15134e; padding-left: 5px;padding-right: 5px;" onclick="JsMain.GetLoggedInUserDetails('@Url.Action("GetLoggedInUserDetails", "UserAccount",  new { Area = "Security" })')"
                                class="btn btn-primary" title="Manage">
-                                Hello <span class="blockquote">@User.Identity.Name!</span>
+                                Hello <span class="blockquote">@User.Identity.Name</span>
                             </a>
 
-                            <form asp-area="Security" asp-controller="UserAccount" asp-action="Logout"
-                                  onclick="JsMain.ShowLoaddingIndicator()"
-                                  asp-route-returnUrl="@Url.Action("Index", "UserAccount", new { area = "UserAccount" })"
-                                  method="post" id="logoutForm" class="navbar-right">
-                                <ul class="nav navbar-nav navbar-right">
-                                    <li>
-                                        <button type="submit" style="color:white;padding-right: 3px;margin-left: 9px;" class="btn btn-info">
-                                            <i style="font-size: 20px;margin-top: 6px;margin-left: 0px;margin-right: 0px;" class="fas fa-power-off"></i>
-                                        </button>
-                                    </li>
-                                </ul>
-                            </form>
+                            <button type="button" onclick="homeController.onLogoutButtonClick('@Url.Action("Logout", "Home")')"
+                                    style="color:white;padding-right: 3px;margin-left: 9px;" class="btn btn-info">
+                                <i style="font-size: 20px;margin-top: 6px;margin-left: 0px;margin-right: 0px;" class="fas fa-power-off"></i>
+                            </button>
+                           
                         }
                         else
                         {
@@ -151,11 +156,7 @@
                 $(document).ajaxComplete(function () {
                     $.validator.unobtrusive.parse(document);
                 });
-
-
                 $(document).ready(function () {
-
-
                     $(document).on('show.bs.modal', '.modal', function (event) {
                         var zIndex = 1040 + (10 * $('.modal:visible').length);
                         $(this).css('z-index', zIndex);
@@ -236,6 +237,13 @@
             +               new MvcGrid(element);
         });
 
+        function quitBox(cmd) {
+            if (cmd == 'quit') {
+                window.top.close();
+            }
+            return false;
+        }
+
         const swalWithBootstrapButtons = Swal.mixin({
             customClass: {
                 confirmButton: 'btn btn-primary',
@@ -243,6 +251,26 @@
             },
             buttonsStyling: false,
         });
+
+        var checkUserAuthenticatedNow = homeController.getCookie('AuthenticatedNow');
+
+        if (checkUserAuthenticatedNow == "Yes") {
+
+            document.cookie = "AuthenticatedNow=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 4000
+            });
+
+            Toast.fire({
+                type: 'success',
+                title: 'Logged in successfully'
+            })
+        }
+
     </script>
 </body>
 </html>

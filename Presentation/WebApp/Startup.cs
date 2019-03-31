@@ -93,9 +93,9 @@
                 options.AreaViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
             });
 
-            services.AddSingleton<AnonymousClientHub>();
+           
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
+            services.AddSingleton<AnonymousClientHub>();
             services.AddAntiforgery(options =>
             {
                 // new API
@@ -166,7 +166,6 @@
             }
 
             app.UseElmah();
-            //app.ConfigureExceptionHandler();
             app.UseHttpsRedirection();
 
             // Configure JSNLog
@@ -184,9 +183,8 @@
 
             app.UseCookiePolicy(new CookiePolicyOptions
             {
-                HttpOnly = HttpOnlyPolicy.Always,
-                
-                Secure = CookieSecurePolicy.Always,
+                HttpOnly = HttpOnlyPolicy.None,                
+                Secure = CookieSecurePolicy.None,
                 MinimumSameSitePolicy = SameSiteMode.None
             });
 

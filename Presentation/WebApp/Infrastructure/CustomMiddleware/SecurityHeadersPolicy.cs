@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace WebApp.Infrastructure.CustomMiddleware
+﻿namespace WebApp.Infrastructure.CustomMiddleware
 {
+    using System.Collections.Generic;
+
     public class SecurityHeadersPolicy
     {
         public IDictionary<string, string> SetHeaders { get; }

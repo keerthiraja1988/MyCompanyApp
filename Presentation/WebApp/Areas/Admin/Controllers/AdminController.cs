@@ -23,7 +23,6 @@
     public class AdminController : Controller
     {
         private readonly IAdminService _adminService;
-
         private readonly IMapper _mapper;
         private readonly IHubContext<AnonymousClientHub> _anonymousHubContext;
 
@@ -134,6 +133,8 @@
         {
             await this._anonymousHubContext.Clients.
                         Client(userViewModel.ConnectionId).SendAsync("progressBarUpdate", "0");
+
+            
 
             User user = new User();
             user = this._mapper.Map<User>(userViewModel);
