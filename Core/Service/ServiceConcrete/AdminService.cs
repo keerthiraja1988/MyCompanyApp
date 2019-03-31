@@ -23,9 +23,21 @@
             return await this._adminRepository.GetUsers();
         }
 
+        public async Task<List<RoleAssetMapping>> GetRoleAssetDetails()
+        {
+            return await this._adminRepository.GetRoleAssetDetails();
+        }
+
         public async Task<long> AddUser(User user)
         {
             return await this._adminRepository.AddUser(user);
+        }
+
+        public async Task AddRolesToUser(List<RoleAssetMapping> roleAssetMappings,
+                                         long userId,
+                                         long createdBy)
+        {
+            await this._adminRepository.AddRolesToUser(roleAssetMappings, userId, createdBy);
         }
 
         public async Task DeleteUser(User user)
@@ -46,6 +58,7 @@
             var userRoles = userDetails.Set2.ToList();
             return (userDetails.Set1.FirstOrDefault(), userRoles);
         }
+
         #endregion
     }
 }

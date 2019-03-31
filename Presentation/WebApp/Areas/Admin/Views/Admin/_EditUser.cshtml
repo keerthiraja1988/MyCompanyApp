@@ -1,6 +1,5 @@
 ﻿@model WebApp.Models.UserViewModel
 
-
 <div class="row">
     <div class="col-sm">
         <div class="form-group">
@@ -65,7 +64,6 @@
 </div>
 
 <script>
-
     $('#modalLoadingIcon').modal('hide');
 
     setTimeout(
@@ -74,18 +72,21 @@
         }, 300);
 
     function editUserOnBegin() {
-        //$('#modalProgressBar').modal('show');
+        $('#modalProgressBar').modal('show');
     };
 
     function editUserOnComplete(xhr) {
+        
+    };
+
+    function editUserOnSuccess(data, status, xhr) {
+        new MvcGrid(document.querySelector('#gridGetsUsersAjax')).reload();
+        $('#modalEditUser').modal('hide');  
+
         setTimeout(
             function () {
                 $('#modalProgressBar').modal('hide');
             }, 500);
-    };
-
-    function editUserOnSuccess(data, status, xhr) {
-        //new MvcGrid(document.querySelector('#gridGetsUsersAjax')).reload();
 
         if (jQuery.type(data.Status) === "undefined") {
 
@@ -101,6 +102,7 @@
             });
         }
     };
+
     function editUserOnFailure(XMLHttpRequest, textStatus, errorThrown) {
         new MvcGrid(document.querySelector('#gridGetsUsersAjax')).reload();
 

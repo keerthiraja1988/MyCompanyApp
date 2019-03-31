@@ -8,6 +8,8 @@
     using System.Threading.Tasks;
     using AutoMapper;
     using Domain;
+    using Domain.Admin;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.SignalR;
     using Newtonsoft.Json.Linq;
@@ -15,9 +17,11 @@
     using WebApp.Hubs;
     using WebApp.Infrastructure;
     using WebApp.Infrastructure.Filters;
+    using WebApp.Infrastructure.Security;
     using WebApp.Models;
 
-    [AppAuthorization]
+    [Authorize]
+    [Roles("Admin")]
     [AutoValidateAntiforgeryToken]
     [Area("Admin")]
     public class AdminController : Controller
@@ -61,7 +65,61 @@
         {
             UserViewModel userViewModel = new UserViewModel();
 
-            return await Task.Run(() => this.PartialView("_AddUser1", userViewModel));
+            return await Task.Run(() => this.PartialView("_AddUser", userViewModel));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAddRolesToUserPartialView(long userId)
+        {
+            List<RoleAssetMappingViewModel> roleAssetMappingViewModels = new List<RoleAssetMappingViewModel>();
+
+            List<RoleAssetMapping> roleAssetMappings = await this._adminService.GetRoleAssetDetails();
+
+            List<string> roles = roleAssetMappings.Select(x => x.RoleName).Distinct().ToList();
+
+            foreach (var item in roles)
+            {
+                List<RoleAssetMapping> viewsForRole = roleAssetMappings
+                                                     .Where(w => w.RoleName == item && w.AssetType == "View")
+                                                     .ToList();
+
+                RoleAssetMappingViewModel roleAssetMappingViewModel = new RoleAssetMappingViewModel();
+                roleAssetMappingViewModel.RoleName = item;
+                roleAssetMappingViewModel.RoleAssetMappings =
+                                        this._mapper.Map<List<RoleAssetMappingViewModel>>(viewsForRole);
+
+                roleAssetMappingViewModels.Add(roleAssetMappingViewModel);
+            }
+
+            return await Task.Run(() => 
+                            this.PartialView("_AddRolesToUser", 
+                                            (roleAssetMappingViewModels,
+                                             userId)));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddRolesToUser(
+                     [FromForm] List<RoleAssetMappingViewModel> roleAssetMappingViewModels,
+                     long userId)
+        {
+            roleAssetMappingViewModels = roleAssetMappingViewModels.Where(w => w.IsActive == true).ToList();
+            List<RoleAssetMapping> roleAssetMappings = new List<RoleAssetMapping>();
+            roleAssetMappings = this._mapper.Map<List<RoleAssetMapping>>(roleAssetMappingViewModels);
+
+            await this._adminService.AddRolesToUser(roleAssetMappings,
+                                                    userId,
+                                                    123);
+
+            dynamic ajaxReturn = new JObject();
+            ajaxReturn.Status = "Success";
+
+            //ajaxReturn.UserId = string;
+            ajaxReturn.GetGoodJobVerb = GoodWorkVerbs.GetGoodJobVerb();
+            ajaxReturn.Message = " - user sucessfully created." +
+                " Now you can setup application roles";        
+
+            return this.Json(ajaxReturn);
         }
 
         [HttpPost]
@@ -107,14 +165,6 @@
         }
 
         [HttpGet]
-        public IActionResult GetAddUserRolesPartialView(long userId)
-        {
-            UserViewModel userViewModel = new UserViewModel();
-
-            return this.PartialView("_AddUserRoles", userViewModel);
-        }
-
-        [HttpGet]
         public async Task<IActionResult> GetEditUserPartialView(long userId)
         {
             List<User> users = await this._adminService.GetUsers();
@@ -125,7 +175,7 @@
 
             var userViewModel = usersViewModel.Where(x => x.UserId == userId).FirstOrDefault();
 
-            return await Task.Run(() => this.PartialView("_EditUser1", userViewModel));
+            return await Task.Run(() => this.PartialView("_EditUser", userViewModel));
         }
 
         [HttpPost]
@@ -133,8 +183,6 @@
         {
             await this._anonymousHubContext.Clients.
                         Client(userViewModel.ConnectionId).SendAsync("progressBarUpdate", "0");
-
-            
 
             User user = new User();
             user = this._mapper.Map<User>(userViewModel);

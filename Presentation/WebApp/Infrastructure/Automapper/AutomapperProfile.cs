@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using AutoMapper;
     using Domain;
+    using Domain.Admin;
     using WebApp.Models;
 
     public class AutomapperProfile : Profile
@@ -13,7 +14,9 @@
         public AutomapperProfile()
         {
             CreateMap<UserViewModel, User>()
-                    .ReverseMap(); 
+                    .ReverseMap();
+            CreateMap<RoleAssetMappingViewModel, RoleAssetMapping>()
+                    .ReverseMap();
         }
     }
 }

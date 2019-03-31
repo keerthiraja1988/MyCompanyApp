@@ -13,7 +13,13 @@
     {
         Task<List<User>> GetUsers();
 
+        Task<List<RoleAssetMapping>> GetRoleAssetDetails();
+
         Task<long> AddUser(User user);
+
+        Task AddRolesToUser(List<RoleAssetMapping> roleAssetMappings,
+                                         long userId,
+                                         long createdBy);
 
         Task DeleteUser(User user);
 

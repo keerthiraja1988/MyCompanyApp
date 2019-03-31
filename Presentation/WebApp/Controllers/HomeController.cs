@@ -45,7 +45,6 @@
         [Roles("Admin")]
         public IActionResult Index()
         {
-
             var vvv = this.User.GetLoggedInUserDetails();
             this._logger.LogInformation("Index page says hello");
             return this.View();

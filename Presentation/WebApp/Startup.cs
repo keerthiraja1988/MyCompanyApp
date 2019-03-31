@@ -93,7 +93,6 @@
                 options.AreaViewLocationFormats.Add("/Views/Shared/{0}.cshtml");
             });
 
-           
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<AnonymousClientHub>();
             services.AddAntiforgery(options =>

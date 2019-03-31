@@ -1,0 +1,112 @@
+﻿@using System
+@model (List<WebApp.Models.RoleAssetMappingViewModel> roleAssetMappingViewModels, long userId)
+<form id="formAddRolesToUser" asp-area="Admin" asp-controller="Admin" asp-action="AddRolesToUser"
+      method="post" data-ajax="true"
+      data-ajax-begin="addRolesToUserOnBegin" data-ajax-complete="addRolesToUserOnComplete"
+      data-ajax-success="addRolesToUserOnSuccess" data-ajax-failure="addRolesToUserOnFailure"
+      data-ajax-mode="replace"
+      data-ajax-update="#ajaxAddRolesToUserResult">
+    @Html.AntiForgeryToken()
+    <input asp-for="userId" type="hidden" id="hdnUserIdForAddRolesToUser" />
+    <div class="modal-body" id="ajaxAddRolesToUserResult">
+        <div class="card-deck mb-3 text-center row" style="overflow-y: scroll;height: 420px;">
+            @foreach (var roleAssetMappingViewModel in Model.Item1)
+    {
+            <div class="col-4  col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                <div class="card mb-4 box-shadow">
+                    <div class="card-header" style="display: flex;">
+
+                        <div class="custom-control custom-switch" style="padding-top: 3px;">
+
+                            <input type="checkbox" class="custom-control-input"
+                                   id="@roleAssetMappingViewModel.RoleName"
+                                   asp-for="@roleAssetMappingViewModel.IsActive" />
+
+                            @*<input type="checkbox" class="custom-control-input" id="customSwitch1">*@
+                            <label class="display-4 custom-control-label" for="@roleAssetMappingViewModel.RoleName"></label>
+                        </div>
+
+                        <span class="h4" style="  padding-left: 11px;">@roleAssetMappingViewModel.RoleName</span>
+
+                    </div>
+                    <div class="card-body" style="HEIGHT: 220PX;">
+                        <ul class="list-unstyled mt-3 mb-4">
+
+                            @foreach (var screen in roleAssetMappingViewModel.RoleAssetMappings)
+                {
+                            <li>@screen.ScreenName</li>
+                }
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+    }
+            <script>
+                    $('#modalAddRolesToUser').modal('show');
+
+                    function addRolesToUserOnBegin(jqXHR, settings) {
+
+                        settings.data = { //Passing data
+                            data: "123", //Reading text box values using Jquery
+                        }
+                    };
+
+                    function addRolesToUserOnComplete() {
+
+
+                    };
+
+                    function addRolesToUserOnSuccess() {
+
+
+                    };
+
+                    function addRolesToUserOnFailure() {
+
+
+                    };
+
+                $('#btnAddRolesToUser').click(function () {
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+                    var roleAssetMappingViewModels = [];
+
+                    $('#ajaxAddRolesToUserResult').find('input').each(function () {
+                        var roleAssetMappingViewModel = {};
+                        roleAssetMappingViewModel.IsActive = this.checked;
+                        roleAssetMappingViewModel.RoleName = this.id;
+                        roleAssetMappingViewModels.push(roleAssetMappingViewModel);
+                    });
+
+                    $.ajax({
+                            type: 'POST',
+                            url:  '@Url.Action("AddRolesToUser", "Admin", new { Area = "Admin" })',
+                            data: {
+                                roleAssetMappingViewModels: roleAssetMappingViewModels,
+                                userId: $('#hdnUserIdForAddRolesToUser').val(),
+                                __RequestVerificationToken: token
+                            },
+
+                            success: function (data) {
+
+                            },
+                            error: function () {
+                                alert("Connection Failed. Please Try Again");
+                            }
+                        });
+                    });
+            </script>
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="btnAddRolesToUser">
+            <i class="fas fa-user-shield"></i> Add
+        </button>
+        <button type="button" id="btnAddUserCancel" onclick="AddRolesToUserCancelOnClick()"
+                class="btn btn-dark">
+            <i class="fas fa-times"></i> Cancel
+        </button>
+
+    </div>
+</form>

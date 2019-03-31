@@ -17,8 +17,16 @@
         [Sql("SELECT * FROM [dbo].[User] WHERE [IsActive] = 1")]
         Task<List<User>> GetUsers();
 
+        [Sql("[dbo].[P_GetRoleAssetDetails]")]
+        Task<List<RoleAssetMapping>> GetRoleAssetDetails();
+
         [Sql("P_AddUser")]
         Task<long> AddUser(User user);
+
+        [Sql("[dbo].[P_AddRolesToUser]")]
+        Task AddRolesToUser(List<RoleAssetMapping> T_AddRolesToUser,
+                                         long userId,
+                                         long createdBy);
 
         [Sql("P_DeleteUser")]
         Task DeleteUser(User user);
