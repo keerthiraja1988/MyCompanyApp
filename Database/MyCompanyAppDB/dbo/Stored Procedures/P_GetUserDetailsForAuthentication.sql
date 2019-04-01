@@ -1,10 +1,18 @@
 ﻿
 CREATE PROC [dbo].[P_GetUserDetailsForAuthentication] 
-	@Username		[nvarchar](500) 	
+	@Username		[nvarchar](500) ,
+		@UserId		BIGINT
   AS
 begin
+	
+	IF(@UserId = 0)
+	BEGIN
+		SELECT @UserId = (SELECT TOP 1 [UserId]									 
+								FROM [dbo].[User]
+								WHERE [Username] = @Username AND [IsActive] = 1)
+	END
 
-	DECLARE @TodaysDate DATETIME = GETDATE()
+
 
 	SELECT TOP 1 [UserId]
 			  ,[Username]
@@ -17,11 +25,9 @@ begin
 			  ,[ModifiedOn]
 			  ,[ModifiedBy]
 	FROM [dbo].[User]
-	WHERE [Username] = @Username AND [IsActive] = 1
+	WHERE [UserId] = @UserId AND [IsActive] = 1
 
-	DECLARE @UserId [bigint] = (SELECT TOP 1 [UserId]									 
-								FROM [dbo].[User]
-								WHERE [Username] = @Username AND [IsActive] = 1)
+
 
 	SELECT USRROLES.[UserRoleId]
 		  ,USRROLES.[UserId]

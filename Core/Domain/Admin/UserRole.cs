@@ -17,13 +17,7 @@
     {
         public Guid UserAuthenticationId { get; set; }
 
-        public long UserId { get; set; }
-
-        public string UserName { get; set; }
-
-        public DateTime ExpiresOn { get; set; }
-
-        public DateTime CreatedOn { get; set; }
+        public User User { get; set; } = new User();
 
         public List<UserRoleModel> Roles { get; set; } = new List<UserRoleModel>();
     }

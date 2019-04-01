@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
+    using Domain;
     using Domain.Admin;
     using ElmahCore;
     using Microsoft.AspNetCore.Authentication;
@@ -90,16 +91,17 @@
 
             var userName = identity.Name.Substring(identity.Name.LastIndexOf(@"\") + 1);
 
-            UserAuthenticationModel userAuthentication = new UserAuthenticationModel();
-            userAuthentication.UserName = userName;
+            User user = new User();
+            user.UserName = userName;
 
-            (UserAuthenticationModel userDetail, List<UserRoleModel> userRoles) userDetailAndRoles = await this._adminService.GetUserDetailsForAuthentication(userAuthentication);
-            UserAuthenticationModel userDetai = userDetailAndRoles.userDetail;
+            (User user, List<UserRoleModel> userRoles) userDetailAndRoles 
+                        = await this._adminService.GetUserDetailsForAuthentication(user);
+           
             List<UserRoleModel> userRoles = userDetailAndRoles.userRoles;
 
             List<Claim> claims = new List<Claim>
              {
-                new Claim ("http://example.org/claims/UserName", "UserName", userDetai.UserName),
+                new Claim ("http://example.org/claims/UserName", "UserName", user.UserName),
                 new Claim(ClaimTypes.Name , userName),
                 new Claim(ClaimTypes.Authentication , "Authenticated"),
                 new Claim("http://example.org/claims/LoggedInTime", "LoggedInTime", DateTime.Now.ToString())

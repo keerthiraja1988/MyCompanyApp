@@ -25,7 +25,7 @@
                 throw new ArgumentNullException(nameof(principal));
             }
 
-            var userRoles = principal.FindAll(ClaimTypes.Role).Select(s => s.Value).ToList();
+            var userRoles = principal.FindAll(ClaimTypes.Authentication).Select(s => s.Value).ToList();
 
             if (userRoles.Any(x => x == "Authenticated"))
             {

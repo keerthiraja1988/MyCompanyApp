@@ -191,5 +191,6 @@
   <ItemGroup>
     <None Include="CustomScripts\ElmahCustom2.sql" />
     <None Include="SQLComparator\LocalToProjectComparator.scmp" />
+    <None Include="CustomScripts\Data.sql" />
   </ItemGroup>
 </Project>

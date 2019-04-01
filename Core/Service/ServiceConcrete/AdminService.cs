@@ -51,10 +51,10 @@
         }
 
         #region User Authentication
-        public async Task<(UserAuthenticationModel userDetail, List<UserRoleModel> userRoles)>
-                        GetUserDetailsForAuthentication(UserAuthenticationModel userAuthentication)
+        public async Task<(User user, List<UserRoleModel> userRoles)>
+                        GetUserDetailsForAuthentication(User user)
         {
-            var userDetails = await this._adminRepository.GetUserDetailsForAuthentication(userAuthentication);
+            var userDetails = await this._adminRepository.GetUserDetailsForAuthentication(user);
             var userRoles = userDetails.Set2.ToList();
             return (userDetails.Set1.FirstOrDefault(), userRoles);
         }

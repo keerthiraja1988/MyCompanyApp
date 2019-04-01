@@ -20,8 +20,7 @@
     using WebApp.Infrastructure.Security;
     using WebApp.Models;
 
-    [Authorize]
-    [Roles("Admin")]
+    [Authorize( Roles = "Admin" )]
     [AutoValidateAntiforgeryToken]
     [Area("Admin")]
     public class AdminController : Controller
@@ -58,6 +57,55 @@
             usersViewModel = this._mapper.Map<List<UserViewModel>>(users);
 
             return await Task.Run(() => this.PartialView("_GetUsers", usersViewModel));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserDetailsSummary(long userId)
+        {
+            UserViewModel userViewModel = new UserViewModel();
+            List<UserRoleViewModel> userRoleViewModels = new List<UserRoleViewModel>();
+            List<RoleAssetMappingViewModel> roleAssetMappingViewModels = new List<RoleAssetMappingViewModel>();
+            
+            User user = new User();
+            user.UserId = userId;
+
+            (User user, List<UserRoleModel> userRoles) userDetailAndRoles
+                        = await this._adminService.GetUserDetailsForAuthentication(user);
+
+            List<UserRoleModel> userRoles = userDetailAndRoles.userRoles;
+            user = userDetailAndRoles.user;
+            userViewModel = _mapper.Map<UserViewModel>(user);
+            userRoleViewModels = _mapper.Map<List<UserRoleViewModel>>(userRoles);
+
+            List<RoleAssetMapping> roleAssetMappings = await this._adminService.GetRoleAssetDetails();
+
+            List<string> roles = roleAssetMappings
+                                    .Select(x => x.RoleName)
+                                    .Distinct()
+                                    .ToList();
+
+            foreach (var item in roles)
+            {
+                if (userRoleViewModels.Any(a => a.RoleName == item))
+                {
+                    List<RoleAssetMapping> viewsForRole = roleAssetMappings
+                                     .Where(w => w.RoleName == item && w.AssetType == "View")
+                                     .ToList();
+
+                    RoleAssetMappingViewModel roleAssetMappingViewModel = new RoleAssetMappingViewModel();
+                    roleAssetMappingViewModel.RoleName = item;
+                    roleAssetMappingViewModel.RoleAssetMappings =
+                                            this._mapper.Map<List<RoleAssetMappingViewModel>>(viewsForRole);
+
+                    roleAssetMappingViewModels.Add(roleAssetMappingViewModel);
+                }
+            }
+
+            return await Task.Run(() => 
+                        this.PartialView("_UserDetaillSummary",
+                                         (userViewModel, 
+                                          userRoleViewModels,
+                                          roleAssetMappingViewModels)));
         }
 
         [HttpGet]
@@ -103,6 +151,16 @@
                      [FromForm] List<RoleAssetMappingViewModel> roleAssetMappingViewModels,
                      long userId)
         {
+            if (!roleAssetMappingViewModels.Any(a => a.IsActive == true))
+            {
+                dynamic ajaxValidatationErrorReturn = new JObject();
+                ajaxValidatationErrorReturn.Status = "ValidatationError";
+
+                ajaxValidatationErrorReturn.Message = "Please select at least one role.";
+
+                return this.Json(ajaxValidatationErrorReturn);
+            }
+
             roleAssetMappingViewModels = roleAssetMappingViewModels.Where(w => w.IsActive == true).ToList();
             List<RoleAssetMapping> roleAssetMappings = new List<RoleAssetMapping>();
             roleAssetMappings = this._mapper.Map<List<RoleAssetMapping>>(roleAssetMappingViewModels);
@@ -113,11 +171,10 @@
 
             dynamic ajaxReturn = new JObject();
             ajaxReturn.Status = "Success";
-
-            //ajaxReturn.UserId = string;
+            ajaxReturn.UserId = userId;
             ajaxReturn.GetGoodJobVerb = GoodWorkVerbs.GetGoodJobVerb();
-            ajaxReturn.Message = " - user sucessfully created." +
-                " Now you can setup application roles";        
+            ajaxReturn.Message = "Roles has been added to users. " +
+                "Please click next to view user's summary";        
 
             return this.Json(ajaxReturn);
         }

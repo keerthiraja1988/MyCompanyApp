@@ -17,6 +17,8 @@
                     .ReverseMap();
             CreateMap<RoleAssetMappingViewModel, RoleAssetMapping>()
                     .ReverseMap();
+            CreateMap<UserRoleViewModel, UserRoleModel>()
+                    .ReverseMap();
         }
     }
 }

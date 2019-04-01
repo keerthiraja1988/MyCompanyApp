@@ -1,0 +1,97 @@
+﻿@model (WebApp.Models.UserViewModel userViewModel, List<WebApp.Models.UserRoleViewModel> userRoleViewModels, List<WebApp.Models.RoleAssetMappingViewModel> roleAssetMappingViewModels)
+<div class="modal" id="modalUserDetailsSummary" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">User Summary</h5>
+
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-9">
+                        <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group">
+
+                                    <label asp-for="userViewModel.UserName"></label> 
+                                    <input type="text" asp-for="userViewModel.UserName" disabled="disabled"
+                                           class="form-control" id="txtUserName"
+                                           placeholder="Enter User Name">
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="form-group">
+
+                                    <label asp-for="userViewModel.UserId"></label>
+
+                                    <input disabled="disabled" type="text" asp-for="userViewModel.UserId"
+                                           class="form-control" id="txtUserId"
+                                           placeholder="Enter User Id">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label asp-for="userViewModel.FirstName"></label>  
+                                    <input disabled="disabled" type="text" asp-for="userViewModel.FirstName"
+                                           class="form-control" id="txtFirstName"
+                                           placeholder="Enter First Name">
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label asp-for="userViewModel.LastName">Last Name</label>
+                                    <input disabled="disabled" type="text" asp-for="userViewModel.LastName"
+                                           class="form-control" id="txtLastName"
+                                           placeholder="Enter Last Name">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label asp-for="userViewModel.MiddleName"> Middle Name</label>
+                                    <input disabled="disabled" type="text" asp-for="userViewModel.MiddleName"
+                                           class="form-control" id="txtMiddleName"
+                                           placeholder="Enter Middle Name">
+                                </div>
+                            </div>
+                            <div class="col-sm">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="row mb-2"> <strong> Roles Assigned </strong> </div>
+                        @foreach (var item in Model.userRoleViewModels)
+                        {
+                            <div class="row ml-1"> @item.RoleName </div>
+                        }
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" id="btnUserDetailsSummaryCancel" 
+                        class="btn btn-dark">
+                    <i class="fas fa-times"></i> Close
+                </button>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#modalUserDetailsSummary').modal('show');
+
+        $('#btnUserDetailsSummaryCancel').click(function () {
+            $('#modalUserDetailsSummary').modal('hide');
+            $('#modalUserDetailsSummary').remove();
+
+        });
+    </script>
+</div>

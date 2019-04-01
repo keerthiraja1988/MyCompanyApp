@@ -11,49 +11,60 @@
     <div class="modal-body" id="ajaxAddRolesToUserResult">
         <div class="card-deck mb-3 text-center row" style="overflow-y: scroll;height: 420px;">
             @foreach (var roleAssetMappingViewModel in Model.Item1)
-    {
-            <div class="col-4  col-sm-4 col-md-4 col-lg-4 col-xl-4">
-                <div class="card mb-4 box-shadow">
-                    <div class="card-header" style="display: flex;">
+            {
+                <div class="col-4  col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                    <div class="card mb-4 box-shadow">
+                        <div class="card-header" style="display: flex;">
 
-                        <div class="custom-control custom-switch" style="padding-top: 3px;">
+                            <div class="custom-control custom-switch" style="padding-top: 3px;">
 
-                            <input type="checkbox" class="custom-control-input"
-                                   id="@roleAssetMappingViewModel.RoleName"
-                                   asp-for="@roleAssetMappingViewModel.IsActive" />
+                                <input type="checkbox" class="custom-control-input"
+                                       id="@roleAssetMappingViewModel.RoleName"
+                                       asp-for="@roleAssetMappingViewModel.IsActive" />
 
-                            @*<input type="checkbox" class="custom-control-input" id="customSwitch1">*@
-                            <label class="display-4 custom-control-label" for="@roleAssetMappingViewModel.RoleName"></label>
+                                @*<input type="checkbox" class="custom-control-input" id="customSwitch1">*@
+                                <label class="display-4 custom-control-label" for="@roleAssetMappingViewModel.RoleName"></label>
+                            </div>
+
+                            <span class="h4" style="  padding-left: 11px;">@roleAssetMappingViewModel.RoleName</span>
+
                         </div>
+                        <div class="card-body" style="HEIGHT: 220PX;">
+                            <ul class="list-unstyled mt-3 mb-4">
 
-                        <span class="h4" style="  padding-left: 11px;">@roleAssetMappingViewModel.RoleName</span>
+                                @foreach (var screen in roleAssetMappingViewModel.RoleAssetMappings)
+                                {
+                                    <li>@screen.ScreenName</li>
+                                }
 
-                    </div>
-                    <div class="card-body" style="HEIGHT: 220PX;">
-                        <ul class="list-unstyled mt-3 mb-4">
-
-                            @foreach (var screen in roleAssetMappingViewModel.RoleAssetMappings)
-                {
-                            <li>@screen.ScreenName</li>
-                }
-
-                        </ul>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-    }
-            <script>
-                    $('#modalAddRolesToUser').modal('show');
+            }
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="btnAddRolesToUser">
+            <i class="fas fa-plus"></i> Add
+        </button>
+        <button type="button" id="btnAddUserCancel" onclick="AddRolesToUserCancelOnClick()"
+                class="btn btn-dark">
+            <i class="fas fa-times"></i> Cancel
+        </button>
+
+    </div>
+
+    <script>
+        $('#modalAddRolesToUser').modal('show');
+
+        var GetUserDetailsSummaryUrl =
+                         '@Url.Action("GetUserDetailsSummary", "Admin", new { Area = "Admin" })';
 
                     function addRolesToUserOnBegin(jqXHR, settings) {
-
-                        settings.data = { //Passing data
-                            data: "123", //Reading text box values using Jquery
-                        }
                     };
 
                     function addRolesToUserOnComplete() {
-
 
                     };
 
@@ -67,7 +78,9 @@
 
                     };
 
-                $('#btnAddRolesToUser').click(function () {
+
+        $("#btnAddRolesToUser").click(function () {
+
                     var token = $('input[name="__RequestVerificationToken"]').val();
                     var roleAssetMappingViewModels = [];
 
@@ -87,26 +100,44 @@
                                 __RequestVerificationToken: token
                             },
 
-                            success: function (data) {
+                        success: function (data, status, xhr) {
+                                if (jQuery.type(data.Status) === "undefined") {
 
+                                }
+                                else if (data.Status == 'ValidatationError') {
+                                    swalWithBootstrapButtons.fire({
+                                        title: 'Validatation Error',
+                                        text: data.Message,
+                                        type: 'warning',
+                                        showCancelButton: false,
+                                        confirmButtonText: '<i class="fas fa-check"></i> Ok'
+                                    });
+                                }
+                                else {
+                                    $('#modalAddRolesToUser').modal('hide');
+
+                                    swalWithBootstrapButtons.fire({
+                                        title: data.GetGoodJobVerb,
+                                        text: data.Message,
+                                        type: 'success',
+                                        showCancelButton: false,
+                                        confirmButtonText: '<i class="fas fa-check"></i> Ok'
+                                    });
+
+                                    $('#loadUserDetailsSummary').load(GetUserDetailsSummaryUrl + '?userId=' + data.UserId);
+                                }
                             },
-                            error: function () {
-                                alert("Connection Failed. Please Try Again");
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            new MvcGrid(document.querySelector('#gridGetsUsersAjax')).reload();
+
+                            homeController.showErrorMessagePopUp(XMLHttpRequest, textStatus, errorThrown);
+
+                            setTimeout(
+                                function () {
+                                    $('#modalProgressBar').modal('hide');
+                                }, 500);
                             }
-                        });
-                    });
-            </script>
-
-        </div>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="btnAddRolesToUser">
-            <i class="fas fa-user-shield"></i> Add
-        </button>
-        <button type="button" id="btnAddUserCancel" onclick="AddRolesToUserCancelOnClick()"
-                class="btn btn-dark">
-            <i class="fas fa-times"></i> Cancel
-        </button>
-
-    </div>
+                });
+           });
+    </script>
 </form>

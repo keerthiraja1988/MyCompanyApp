@@ -33,4 +33,15 @@
         public long? ModifiedBy { get; set; }
         public string ConnectionId { get; set; }
     }
+
+    public class UserRoleViewModel
+    {
+        public string UserName { get; set; }
+
+        public long UserId { get; set; }
+
+        public int RoleId { get; set; }
+
+        public string RoleName { get; set; }
+    }
 }

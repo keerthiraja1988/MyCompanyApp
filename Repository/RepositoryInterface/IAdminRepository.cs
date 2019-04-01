@@ -37,7 +37,7 @@
 
         #region User Authentication
         [Sql("P_GetUserDetailsForAuthentication")]
-        Task<Results<UserAuthenticationModel, UserRoleModel>> GetUserDetailsForAuthentication(UserAuthenticationModel userAuthentication);
+        Task<Results<User, UserRoleModel>> GetUserDetailsForAuthentication(User user);
         
         #endregion
     }

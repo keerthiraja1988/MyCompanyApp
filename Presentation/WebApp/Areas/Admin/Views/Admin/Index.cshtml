@@ -146,6 +146,11 @@
 
 </div>
 
+<div id="loadUserDetailsSummary">
+
+</div>
+
+
 <script>
     $('#navbarAdminDropdown').addClass('active');
 
@@ -156,7 +161,7 @@
     };
 
     function GetEditUserPartialView(acionUrl) {
-        $('#modalEditUser').modal('show');        
+        $('#modalEditUser').modal('show');
         $('#modalLoadingIcon').modal('show');
         $('#ajaxEditUserResult').load(acionUrl);
     };
