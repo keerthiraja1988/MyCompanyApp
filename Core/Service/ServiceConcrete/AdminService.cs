@@ -2,8 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using System.Linq;
+    using System.Threading.Tasks;
     using Domain;
     using Domain.Admin;
     using RepositoryInterface;
@@ -51,6 +51,7 @@
         }
 
         #region User Authentication
+
         public async Task<(User user, List<UserRoleModel> userRoles)>
                         GetUserDetailsForAuthentication(User user)
         {
@@ -59,6 +60,6 @@
             return (userDetails.Set1.FirstOrDefault(), userRoles);
         }
 
-        #endregion
+        #endregion User Authentication
     }
 }

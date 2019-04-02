@@ -33,12 +33,14 @@
 
         [Sql("P_EditUser")]
         Task EditUser(User user);
-        #endregion
+
+        #endregion User Management
 
         #region User Authentication
+
         [Sql("P_GetUserDetailsForAuthentication")]
         Task<Results<User, UserRoleModel>> GetUserDetailsForAuthentication(User user);
-        
-        #endregion
+
+        #endregion User Authentication
     }
 }

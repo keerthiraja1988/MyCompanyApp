@@ -26,9 +26,10 @@
         Task EditUser(User user);
 
         #region User Authentication
-        Task<(User user, List<UserRoleModel> userRoles)> 
+
+        Task<(User user, List<UserRoleModel> userRoles)>
                     GetUserDetailsForAuthentication(User user);
-       
-        #endregion
+
+        #endregion User Authentication
     }
 }
