@@ -1,9 +1,6 @@
 ﻿namespace WebApp
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
@@ -18,18 +15,14 @@
     using Microsoft.AspNetCore.CookiePolicy;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.HttpsPolicy;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Authorization;
     using Microsoft.AspNetCore.Mvc.Razor;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using NLog;
     using WebApp.Hubs;
     using WebApp.Infrastructure;
-    using WebApp.Infrastructure.CustomMiddleware;
-    using WebApp.Infrastructure.Security;
 
     public class Startup
     {
@@ -74,7 +67,7 @@
                          OnRedirectToAccessDenied = (ctx) =>
                          {
                              var request = ctx.HttpContext.Request.Path;
-                           
+
                              ctx.Response.Redirect(ctx.RedirectUri);
                              return Task.CompletedTask;
                          }
@@ -117,7 +110,7 @@
                 options.Path = @"elmah";
             });
             services.AddElmah<SqlErrorLog>(options =>
-            {               
+            {
                 options.ConnectionString = "Data Source=.;Initial Catalog=MyCompanyAppDB;Integrated Security=True"; // DB structure see here: https://bitbucket.org/project-elmah/main/downloads/ELMAH-1.2-db-SQLServer.sql
             });
 
@@ -141,7 +134,7 @@
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            // Add a sample response header 
+            // Add a sample response header
             app.Use(async (context, nextMiddleware) =>
             {
                 context.Response.OnStarting(() =>
@@ -170,11 +163,11 @@
             // Configure JSNLog
             var jsnlogConfiguration = new JsnlogConfiguration
             {
-                    serverSideMessageFormat = "Url : %url %newline* RequestId : %requestId  %entryId %newline*" +
+                serverSideMessageFormat = "Url : %url %newline* RequestId : %requestId  %entryId %newline*" +
                                                 "Message : %message %newline* %jsonmessage %newline*" +
-                                                "Sent: %date, Browser: %userAgent %newline*" ,
-                           serverSideLogger = "WebApp.Jslogger"
-                       };
+                                                "Sent: %date, Browser: %userAgent %newline*",
+                serverSideLogger = "WebApp.Jslogger"
+            };
 
             app.UseJSNLog(new LoggingAdapter(loggerFactory), jsnlogConfiguration);
 
@@ -182,7 +175,7 @@
 
             app.UseCookiePolicy(new CookiePolicyOptions
             {
-                HttpOnly = HttpOnlyPolicy.None,                
+                HttpOnly = HttpOnlyPolicy.None,
                 Secure = CookieSecurePolicy.None,
                 MinimumSameSitePolicy = SameSiteMode.None
             });

@@ -1,12 +1,6 @@
 ﻿namespace WebApp.Infrastructure.CustomMiddleware
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Antiforgery;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Http;
 
     //public static class ApplicationBuilderExtensions
     //{

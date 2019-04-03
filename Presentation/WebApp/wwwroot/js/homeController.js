@@ -1,6 +1,5 @@
 ﻿(
     function (publicMethod, $) {
-
         publicMethod.showErrorMessagePopUp = function (XMLHttpRequest, textStatus, errorThrown) {
             swalWithBootstrapButtons.fire({
                 title: 'Oops...',
@@ -14,52 +13,46 @@
             });
         },
 
-        publicMethod.onLogoutButtonClick = function (url) {
+            publicMethod.onLogoutButtonClick = function (url) {
+                $.ajax({
+                    async: true,
+                    type: "POST",
+                    url: url,
+                    contentType: 'application/json;',
+                    dataType: 'json',
+                    begin: function () {
+                    },
+                    complete: function () {
+                    },
+                    success: function (data) {
+                        swalWithBootstrapButtons.fire({
+                            text: data.Message,
+                            type: 'success',
+                            showCancelButton: false,
+                            showConfirmButton: false,
+                            allowOutsideClick: false,
+                        });
 
-            $.ajax({
-                async: true,
-                type: "POST",
-                url: url,
-                contentType: 'application/json;',
-                dataType: 'json',
-                begin: function () {
-
-                },
-                complete: function () {
-
-                },
-                success: function (data) {
-
-                    swalWithBootstrapButtons.fire({
-                        text: data.Message,
-                        type: 'success',
-                        showCancelButton: false,
-                        showConfirmButton: false,
-                        allowOutsideClick: false,
-                    });
-
-                    setTimeout(
-                        function () {
-                            var win = window.open("about:blank", "_self");
-                            win.close();
-
-                        }, 2500);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-
-                    swalWithBootstrapButtons.fire({
-                        title: 'Oops...',
-                        text: "An error occurred while processing your request",
-                        type: 'error',
-                        html: '<br> <br>  An error occurred while processing your request. <br> <br> <br> ' +
-                            '<div style="text-align: center; font-size : 14px;" >   Error Message: ' + XMLHttpRequest.status + " " + errorThrown +
-                            '<br> <br> ' + ' Request Id : ' + XMLHttpRequest.getResponseHeader('RequestId') + ' </div>',
-                        showCancelButton: false,
-                        confirmButtonText: '<i class="fas fa-check"></i> Ok'
-                    });
-                }
-            });
-        },
+                        setTimeout(
+                            function () {
+                                var win = window.open("about:blank", "_self");
+                                win.close();
+                            }, 2500);
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        swalWithBootstrapButtons.fire({
+                            title: 'Oops...',
+                            text: "An error occurred while processing your request",
+                            type: 'error',
+                            html: '<br> <br>  An error occurred while processing your request. <br> <br> <br> ' +
+                                '<div style="text-align: center; font-size : 14px;" >   Error Message: ' + XMLHttpRequest.status + " " + errorThrown +
+                                '<br> <br> ' + ' Request Id : ' + XMLHttpRequest.getResponseHeader('RequestId') + ' </div>',
+                            showCancelButton: false,
+                            confirmButtonText: '<i class="fas fa-check"></i> Ok'
+                        });
+                    }
+                });
+            },
 
             publicMethod.getCookie = function (cname) {
                 var name = cname + "=";
@@ -123,8 +116,6 @@
                     $('#modalMessageShowPopUpMessage').text(splitedDtata[3]);
                     $('#modalMessageShowPopUp').modal('show');
                 }
-
             }
-
     }(window.homeController = window.homeController || {}, jQuery)
 );

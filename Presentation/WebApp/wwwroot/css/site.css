@@ -59,7 +59,6 @@ body {
     padding-right: 8px;
 }
 
-
 .form-label-group {
     position: relative;
     margin-bottom: 1rem;
@@ -114,7 +113,6 @@ body {
 
 .swal2-popup.swal2-toast {
     border-radius: 2px;
-   
 }
 
 body.swal2-toast-shown .swal2-container.swal2-shown {
@@ -167,13 +165,11 @@ body.swal2-toast-shown .swal2-container.swal2-shown {
 
 /* Loader Icon End */
 
-
 /* NonFactors.Grid.Mvc6 Starts */
 .userManagementGridWidth {
     width: 216px;
     text-align: center;
 }
-
 
 .mvc-grid th, .mvc-grid td {
     padding: 7px !important;

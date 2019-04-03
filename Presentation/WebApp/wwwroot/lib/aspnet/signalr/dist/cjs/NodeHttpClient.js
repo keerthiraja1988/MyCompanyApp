@@ -48,7 +48,7 @@ var NodeHttpClient = /** @class */ (function (_super) {
                 body: requestBody,
                 // If binary is expected 'null' should be used, otherwise for text 'utf8'
                 encoding: httpRequest.responseType === "arraybuffer" ? null : "utf8",
-                headers: __assign({ 
+                headers: __assign({
                     // Tell auth middleware to 401 instead of redirecting
                     "X-Requested-With": "XMLHttpRequest" }, httpRequest.headers),
                 method: httpRequest.method,

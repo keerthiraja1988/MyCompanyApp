@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - WebApp</title>
 
-
     <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" />
@@ -13,7 +12,6 @@
 
     <script src="~/lib/jquery/dist/jquery.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
-
 
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/homeController.js"></script>
@@ -25,8 +23,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsnlog/2.29.0/jsnlog.min.js"></script>
 
     <script src="~/lib/MvcGrid/mvc-grid.js"></script>
-
-
 </head>
 <body>
     <header id="topheader">
@@ -67,7 +63,6 @@
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" asp-controller="Home" asp-action="AccessDeniedPage">Access Denied</a>
                                 <a class="dropdown-item" asp-controller="Home" asp-action="Error">Error</a>
-
                             </div>
                         </li>
 
@@ -92,7 +87,7 @@
                                     style="color:white;padding-right: 3px;margin-left: 9px;" class="btn btn-info">
                                 <i style="font-size: 20px;margin-top: 6px;margin-left: 0px;margin-right: 0px;" class="fas fa-power-off"></i>
                             </button>
-                           
+
                         }
                         else
                         {
@@ -270,7 +265,6 @@
                 title: 'Logged in successfully'
             })
         }
-
     </script>
 </body>
 </html>

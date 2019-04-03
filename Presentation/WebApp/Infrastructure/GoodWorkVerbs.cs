@@ -2,8 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     public sealed class GoodWorkVerbs
     {
@@ -21,25 +19,25 @@
             List<string> verbs = new List<string>();
             verbs.Add("That’s good! Excellent! Wonderful!");
             verbs.Add("Good work! Superb!");
-          
+
             verbs.Add("Great! Nice going.");
             verbs.Add("Fantastic! ");
             verbs.Add("Congratulations! ");
             verbs.Add("Tremendous! Good going.");
             verbs.Add("Marvelous! I like that.");
-          
+
             verbs.Add("Beautiful Job! ");
-          
+
             verbs.Add("Good job! ");
-           
+
             verbs.Add("Terrific Work! ");
-          
+
             verbs.Add("Superior work!");
             verbs.Add("First class work!");
             verbs.Add("Unbelievable Work!");
             verbs.Add("You always amaze me!");
             verbs.Add("Keep up the great work!");
-          
+
             verbs.Add("Brilliant job!");
             verbs.Add("Good work, as always!");
 
@@ -51,7 +49,7 @@
                 i = i + 1;
             }
         }
-        
+
         public static string GetGoodJobVerb()
         {
             int verbCount = GoodWorkVerbs.goodJobQuotesData.Count;
@@ -62,7 +60,7 @@
             // Omitted: Check if key exists
             return GoodWorkVerbs.goodJobQuotesData[verbIndex];
         }
-               
+
         public static GoodWorkVerbs GetInstance()
         {
             lock (Lock)

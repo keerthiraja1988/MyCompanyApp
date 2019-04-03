@@ -4,7 +4,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">User Summary</h5>
-
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -13,7 +12,7 @@
                             <div class="col-sm">
                                 <div class="form-group">
 
-                                    <label asp-for="userViewModel.UserName"></label> 
+                                    <label asp-for="userViewModel.UserName"></label>
                                     <input type="text" asp-for="userViewModel.UserName" disabled="disabled"
                                            class="form-control" id="txtUserName"
                                            placeholder="Enter User Name">
@@ -34,7 +33,7 @@
                         <div class="row">
                             <div class="col-sm">
                                 <div class="form-group">
-                                    <label asp-for="userViewModel.FirstName"></label>  
+                                    <label asp-for="userViewModel.FirstName"></label>
                                     <input disabled="disabled" type="text" asp-for="userViewModel.FirstName"
                                            class="form-control" id="txtFirstName"
                                            placeholder="Enter First Name">
@@ -60,7 +59,6 @@
                                 </div>
                             </div>
                             <div class="col-sm">
-
                             </div>
                         </div>
                     </div>
@@ -71,17 +69,14 @@
                             <div class="row ml-1"> @item.RoleName </div>
                         }
                     </div>
-
                 </div>
-
             </div>
             <div class="modal-footer">
 
-                <button type="button" id="btnUserDetailsSummaryCancel" 
+                <button type="button" id="btnUserDetailsSummaryCancel"
                         class="btn btn-dark">
                     <i class="fas fa-times"></i> Close
                 </button>
-
             </div>
         </div>
     </div>

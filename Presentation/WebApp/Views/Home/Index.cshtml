@@ -9,8 +9,6 @@
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
 
-
-
 @if (!User.Identities.Any(u => u.IsAuthenticated))
 {
     <h1>Hello World</h1>
@@ -23,7 +21,6 @@ else
 
         }*@
 
-
     @foreach (var item in @User.Identities.First(u => u.IsAuthenticated &&
                            u.HasClaim(c => c.Type == ClaimTypes.Role)).FindAll(ClaimTypes.Role))
     {
@@ -33,16 +30,12 @@ else
         </h1>
     }
 
-
-
-
     <h1>
         Hello @User.Identities.First(
 u => u.IsAuthenticated &&
 u.HasClaim(c => c.Type == ClaimTypes.Name)).FindFirst(ClaimTypes.Name).Value
     </h1>
 }
-
 
 <script>
     $('#navbarHome').addClass('active');

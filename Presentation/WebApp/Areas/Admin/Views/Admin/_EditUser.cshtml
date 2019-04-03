@@ -56,7 +56,6 @@
         </div>
     </div>
     <div class="col-sm">
-
     </div>
 </div>
 
@@ -73,12 +72,12 @@
     };
 
     function editUserOnComplete(xhr) {
-        
+
     };
 
     function editUserOnSuccess(data, status, xhr) {
         new MvcGrid(document.querySelector('#gridGetsUsersAjax')).reload();
-        $('#modalEditUser').modal('hide');  
+        $('#modalEditUser').modal('hide');
 
         setTimeout(
             function () {
