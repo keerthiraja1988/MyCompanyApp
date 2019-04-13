@@ -1,5 +1,7 @@
 ﻿(
     function (publicMethod, $) {
+
+
         publicMethod.showErrorMessagePopUp = function (XMLHttpRequest, textStatus, errorThrown) {
             swalWithBootstrapButtons.fire({
                 title: 'Oops...',
